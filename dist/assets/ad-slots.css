@@ -1,0 +1,11 @@
+/* Empty by default: the build omits placements when slots_enabled is false.
+   These containers do not load AdSense or any other third-party script. */
+.ad-slot{margin:2.5rem 0; padding:1.5rem 0; border-top:1px solid var(--line);border-bottom:1px solid var(--line);clear:both;text-align:center;break-inside:avoid;contain:layout}
+.ad-slot__label{font-size:.75rem;line-height:1.5;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 .75rem}
+.ad-slot__surface{width:min(100%,320px);height:100px;margin-inline:auto;display:grid;place-items:center;flex-shrink:0}
+.ad-slot__preview{display:grid;place-items:center;width:100%;height:100%;border:1px dashed #c3cde0;border-radius:4px;background:#eef2f8;color:#65738a;font-size:.8125rem;padding:.5rem}
+@media(min-width:900px){.ad-slot__surface{width:468px;height:60px}}
+@media(min-width:1120px){.ad-slot__surface{width:728px;height:90px}}
+@media(min-width:1440px){.ad-slot__surface{width:970px;height:90px}}
+@media(max-width:1119px){.ad-slot--tool-secondary{display:none}}
+@media print{.ad-slot{display:none}}

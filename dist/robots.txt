@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://parsecove.com/sitemap.xml

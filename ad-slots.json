@@ -1,0 +1,8 @@
+{
+  "slots_enabled": false,
+  "placements": {
+    "home_after_tools": true,
+    "tool_primary": true,
+    "tool_secondary": false
+  }
+}
