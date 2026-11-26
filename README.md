@@ -1,6 +1,22 @@
 # ParseCove
 
-A buildless, browser-local developer toolbox with seven statically generated pages.
+A browser-local developer toolbox with seven statically generated pages. The production domain is `https://parsecove.com`.
+
+## Deploy to Cloudflare Pages
+
+Connect `joshua880604-web/parsecove` in **Cloudflare → Workers & Pages → Create application → Pages → Import an existing Git repository**. Use these settings:
+
+| Setting | Value |
+| --- | --- |
+| Production branch | `main` |
+| Framework preset | `None` |
+| Build command | `python3 build.py` |
+| Build output directory | `dist` |
+| Root directory | Leave at the repository root |
+
+No dependencies, server, Worker entrypoint, API keys or environment variables are needed for the current build. Git integration deploys future pushes to `main` automatically after the initial setup. This checkout alone does not create a Cloudflare project or authorize access to the account.
+
+See [the deployment guide](DEPLOYMENT.md) for custom-domain setup and launch checks.
 
 ## Develop
 
@@ -13,7 +29,7 @@ Conversion logic is in `dist/assets/core.js`. UI behavior is in `dist/assets/app
 
 ## Publication and SEO
 
-The hosting manifest identifies the existing private Site. Keep its project ID on future edits. The canonical origin is `https://parsecove.com`, defined in `build.py`. DNS validation and HTTPS issuance must finish before the custom domain serves traffic. The site includes indexable static descriptions, examples, source references and a sitemap. Private access prevents public search indexing; public access and Search Console submission are separate launch tasks. No traffic, ranking, or earnings claims are made.
+The canonical origin is `https://parsecove.com`, defined in `build.py`. DNS validation and HTTPS issuance must finish before the custom domain serves traffic. The site includes indexable static descriptions, examples, source references and a sitemap. Submit the production-domain sitemap to Search Console after launch. The existing `.openai/hosting.json` records the previous Sites deployment; Cloudflare Pages uses the build settings above and the contents of `dist`. No traffic, ranking, or earnings claims are made.
 
 ## Limits
 
