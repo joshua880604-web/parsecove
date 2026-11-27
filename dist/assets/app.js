@@ -17,6 +17,48 @@ document.addEventListener('click',e=>{if(!e.target.closest('.sidebar,.mobile-men
 if($('#tool-filter'))$('#tool-filter').addEventListener('input',()=>filter($('#tool-filter'),$$('.tools-grid .tool-card'),$('#filter-empty')));
 function download(data,name,type='text/plain;charset=utf-8'){const u=URL.createObjectURL(new Blob([data],{type}));const a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);}
 const page=document.body.dataset.page;
+if(page==='guides/fix-invalid-base64'){
+ const cases=JSON.parse($('#base64-diagnostic-cases').textContent);
+ const byId=new Map(cases.map(example=>[example.id,example]));
+ const status=(id,label,state)=>{text(id,label);$(id).dataset.state=state;};
+ function inspectExample(){
+  const example=byId.get($('#b64-case-select').value)||cases[0];
+  $('#b64-case-input').value=example.value;
+  text('#b64-case-alphabet',example.alphabet==='url'?'URL-safe (- _)':'Standard (+ /)');
+  text('#b64-case-explanation',example.explanation);
+  $('#b64-case-next').href=example.href;text('#b64-case-next',example.link);
+  $('#b64-case-text').value='';text('#b64-case-hex','');
+  $('#b64-case-bytes-wrap').hidden=true;$('#b64-case-text-wrap').hidden=true;
+  $('[data-copy="b64-case-text"]').disabled=true;
+  status('#b64-case-utf8','Not attempted','skipped');
+  text('#b64-case-text-message','The encoding must be accepted before text decoding.');
+  try{
+   const bytes=fromBase64(example.value,example.alphabet);
+   status('#b64-case-encoding','Accepted','pass');
+   text('#b64-case-parser-message',`${bytes.length} ${bytes.length===1?'byte':'bytes'} decoded after alphabet, length, padding and trailing-bit checks.`);
+   text('#b64-case-hex',Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join(' '));
+   $('#b64-case-bytes-wrap').hidden=false;
+   try{
+    const plain=decodeText(example.value,example.alphabet);
+    status('#b64-case-utf8','Valid UTF-8','pass');
+    text('#b64-case-text-message','The decoded bytes represent valid UTF-8 text.');
+    $('#b64-case-text').value=plain;$('#b64-case-text-wrap').hidden=false;
+    $('[data-copy="b64-case-text"]').disabled=!plain.length;
+    text('#b64-case-summary','Encoding accepted; UTF-8 text decoded successfully.');
+   }catch{
+    status('#b64-case-utf8','Not UTF-8 text','fail');
+    text('#b64-case-text-message','The Base64 is valid, but these bytes do not form valid UTF-8 text. Identify the original data format.');
+    text('#b64-case-summary','Encoding accepted; UTF-8 text decoding rejected. The original bytes are shown below.');
+   }
+  }catch(e){
+   status('#b64-case-encoding','Rejected','fail');
+   text('#b64-case-parser-message',e.message);
+   text('#b64-case-summary','Encoding rejected; UTF-8 decoding was not attempted.');
+  }
+ }
+ $('#b64-case-select').addEventListener('change',inspectExample);
+ inspectExample();
+}
 if(page==='guides/rem-vs-em'){
  const px=n=>`${Number(n.toFixed(4))}px`;
  function runUnits(){
@@ -157,7 +199,11 @@ if(page==='base64'){
   $('#b64-output').value=output;text('#b64-stats',`${new TextEncoder().encode(input).length.toLocaleString()} input bytes · ${new TextEncoder().encode(output).length.toLocaleString()} output bytes`);
  }catch(e){showError('#b64-error',e);}}
  modes('#b64-modes',m=>{const previous=$('#b64-output').value;mode=m;if(previous)$('#b64-input').value=previous;text('#b64-input-label',m==='decode'?'Base64 input':'Text to encode');text('#b64-result-label',m==='decode'?'DECODED TEXT':'ENCODED BASE64');text('#b64-convert',m==='decode'?'Decode text':'Encode text');$('#b64-padding').disabled=m==='decode';run();});$('#b64-padding').disabled=true;
- $('#b64-convert').onclick=run;$('#b64-variant').onchange=run;$('#b64-padding').onchange=run;$('#b64-input').addEventListener('input',()=>{$('#b64-output').value='';text('#b64-stats','');showError('#b64-error',null);});$('#b64-sample').onclick=()=>{$('#b64-input').value=mode==='decode'?encodeText('Hello, 世界 👋',$('#b64-variant').value):'Hello, 世界 👋';run();};$('#b64-clear').onclick=()=>{$('#b64-input').value='';run();};run();
+ $('#b64-convert').onclick=run;$('#b64-variant').onchange=run;$('#b64-padding').onchange=run;$('#b64-input').addEventListener('input',()=>{$('#b64-output').value='';text('#b64-stats','');showError('#b64-error',null);});$('#b64-sample').onclick=()=>{$('#b64-input').value=mode==='decode'?encodeText('Hello, 世界 👋',$('#b64-variant').value):'Hello, 世界 👋';run();};$('#b64-clear').onclick=()=>{$('#b64-input').value='';run();};
+ const examples=new Map([['one-byte',['Zg==','standard']],['unpadded',['Zg','standard']],['bad-padding',['Zg=','standard']],['bad-character',['a$bc','standard']],['url-safe',['8J-YgA','url']],['trailing-bits',['Zh==','standard']]]);
+ const example=examples.get(new URLSearchParams(location.search).get('example'));
+ if(example){$('#b64-input').value=example[0];$('#b64-variant').value=example[1];}
+ run();
 }
 if(page==='base64url-decode'){
  let mode='decode',decodedBytes=null,lastText=null,lastEncoded='';
@@ -227,6 +273,8 @@ if(page==='base64url-decode'){
  };
  $('#url-bytes-download').onclick=()=>{if(decodedBytes?.length)download(decodedBytes,'parsecove-decoded.bin','application/octet-stream');};
  labels();run();
+ const preset=new URLSearchParams(location.search).get('example');
+ if(['emoji','json','binary'].includes(preset))$(`[data-url-example="${preset}"]`).click();
 }
 
 if(page==='base64-to-image'||page==='image-to-base64'){

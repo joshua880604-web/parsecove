@@ -1,6 +1,6 @@
 # ParseCove
 
-A browser-local developer toolbox with fourteen statically generated pages. Try it at [parsecove.com](https://parsecove.com/).
+A browser-local developer toolbox with fifteen statically generated pages. Try it at [parsecove.com](https://parsecove.com/).
 
 ## Use the tools
 
@@ -21,6 +21,8 @@ The tools are free to use without an account. Conversion inputs are processed in
 [Developer guides](https://parsecove.com/guides/) connects worked explanations to the conversion tools. The first guide, [REM vs EM](https://parsecove.com/guides/rem-vs-em/), includes a root/parent/child comparison, nested font examples, source references, an in-page glossary and FAQ. The registry, static content and article metadata live in `guide_pages.py`. Guide publication dates are explicit content dates and do not change on every build. [How to save a Base64 image](https://parsecove.com/guides/save-base64-image/) adds a complete PNG fixture, copyable data URL, checked JavaScript and Python download examples, troubleshooting, terms and FAQ. Its source is `image_save_guide.py`. [Unix timestamps: seconds vs milliseconds](https://parsecove.com/guides/unix-timestamp-seconds-vs-milliseconds/) adds a unit comparison that runs in the browser, explicit-unit tool examples, UTC and offset checks, and executable JavaScript/Python snippets in `timestamp_units_guide.py`.
 
 `python3 tests/guides.py` verifies the comparison against actual browser CSS, defaults and invalid inputs, copy, navigation, static content, structured data and responsive layouts.
+
+[Invalid Base64: why decoding fails](https://parsecove.com/guides/fix-invalid-base64/) adds nine complete public samples, separate encoding and UTF-8 results, strict JavaScript/Python checks, terms and FAQ. Its source is `base64_errors_guide.py`.
 
 ## Deploy to Cloudflare Pages
 
@@ -60,6 +62,8 @@ The Base64URL entry point uses the same strict RFC 4648 byte parser as the exist
 `python3 tests/image_save_guide.py` verifies the full published data URL, clipboard, original-byte downloads, executable JavaScript/Python and HTML examples, article metadata, links and responsive layouts. The two image tools accept `?example=png`, `?example=jpeg` or `?example=webp` to load predefined local fixtures. Other preset values are ignored; user-provided text and files are never added to URLs.
 
 `python3 tests/timestamp_guide.py` checks both unit interpretations, negative and early timestamps, independent range errors, clipboard clearing, published code execution, explicit-unit tool presets, article metadata and responsive layouts. The timestamp converter accepts the predefined `?example=seconds` and `?example=milliseconds` links; custom input is never added to URLs.
+
+`python3 tests/base64_errors_guide.py` checks the nine staged results, clearing and clipboard, executable published code, tool handoffs, allowlisted presets, metadata and responsive layouts. The text decoder accepts the fixed `?example=one-byte`, `unpadded`, `bad-padding`, `bad-character`, `url-safe` and `trailing-bits` examples. The Base64URL tool accepts `emoji`, `json` and `binary` examples. Unknown presets are ignored; custom input is never serialized into links.
 
 ## Publication and SEO
 

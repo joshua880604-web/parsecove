@@ -22,7 +22,7 @@ with sync_playwright() as p:
 
     assert page.goto(BASE + '/guides/').status == 200
     expect(page.locator('h1')).to_have_text('Developer guides')
-    expect(page.locator('.guide-card')).to_have_count(3)
+    expect(page.locator('.guide-card')).to_have_count(4)
     page.screenshot(path=str(OUT / 'guides-desktop.png'), full_page=True)
     page.locator('.guide-card[href="/guides/rem-vs-em/"]').click()
     expect(page.locator('h1')).to_have_text('REM vs EM: what changes, and why')
