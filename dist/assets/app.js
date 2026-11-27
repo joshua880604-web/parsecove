@@ -1,4 +1,4 @@
-import {timestamp,fromISO,encodeText,decodeText,toBase64,parseImage,detectImage,convertUnits,csv} from './core.js';
+import {timestamp,fromISO,encodeText,decodeText,toBase64,fromBase64,parseImage,detectImage,convertUnits,csv} from './core.js';
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const text=(id,value)=>$(id).textContent=value;
 const showError=(id,e)=>{const el=$(id);el.hidden=!e;el.textContent=e?.message||String(e||'');};
@@ -104,6 +104,76 @@ if(page==='base64'){
  modes('#b64-modes',m=>{const previous=$('#b64-output').value;mode=m;if(previous)$('#b64-input').value=previous;text('#b64-input-label',m==='decode'?'Base64 input':'Text to encode');text('#b64-result-label',m==='decode'?'DECODED TEXT':'ENCODED BASE64');text('#b64-convert',m==='decode'?'Decode text':'Encode text');$('#b64-padding').disabled=m==='decode';run();});$('#b64-padding').disabled=true;
  $('#b64-convert').onclick=run;$('#b64-variant').onchange=run;$('#b64-padding').onchange=run;$('#b64-input').addEventListener('input',()=>{$('#b64-output').value='';text('#b64-stats','');showError('#b64-error',null);});$('#b64-sample').onclick=()=>{$('#b64-input').value=mode==='decode'?encodeText('Hello, 世界 👋',$('#b64-variant').value):'Hello, 世界 👋';run();};$('#b64-clear').onclick=()=>{$('#b64-input').value='';run();};run();
 }
+if(page==='base64url-decode'){
+ let mode='decode',decodedBytes=null,lastText=null,lastEncoded='';
+ function reset(){
+  decodedBytes=null;lastText=null;lastEncoded='';
+  $('#url-output').value='';$('#url-standard').value='';text('#url-stats','');
+  showError('#url-error',null);$('#url-note').hidden=true;text('#url-note','');
+  $('#url-download').disabled=true;$('#url-bytes-download').disabled=true;
+ }
+ function run(){
+  reset();
+  try{
+   const input=$('#url-input').value;
+   if(mode==='decode'&&input.length>2000000)throw Error('Use no more than 2 million encoded characters.');
+   if(!input||(mode==='decode'&&!input.trim()))return;
+   let bytes,plain=null,output;
+   if(mode==='encode'){
+    bytes=new TextEncoder().encode(input);
+    if(bytes.length>1000000)throw Error('Use no more than 1 MB (1,000,000 bytes) of UTF-8 text.');
+    output=encodeText(input,'url',$('#url-padding').checked);plain=input;
+   }else{
+    if(input.includes('.'))throw Error('Paste one Base64URL value. For a JWT, use one encoded segment; decoding does not verify its signature.');
+    bytes=fromBase64(input,'url');
+    try{plain=new TextDecoder('utf-8',{fatal:true}).decode(bytes);}catch{}
+    if($('#url-format').value==='hex'){
+     output=Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join(' ');
+    }else if(plain!==null){output=plain;}
+    else{
+     output='';text('#url-note','Valid Base64URL, but these bytes are not UTF-8 text. Choose Hex bytes or download the original bytes.');$('#url-note').hidden=false;
+    }
+   }
+   const standard=toBase64(bytes);
+   decodedBytes=bytes;lastText=plain;lastEncoded=toBase64(bytes,'url',$('#url-padding').checked);
+   $('#url-output').value=output;$('#url-standard').value=standard;
+   text('#url-stats',mode==='encode'?`${bytes.length.toLocaleString()} UTF-8 bytes · ${output.length.toLocaleString()} encoded characters`:`${bytes.length.toLocaleString()} decoded bytes · ${input.trim().endsWith('=')?'padded':'unpadded'} input`);
+   $('#url-download').disabled=!output.length;$('#url-bytes-download').disabled=!bytes.length;
+  }catch(e){reset();showError('#url-error',e);}
+ }
+ function labels(){
+  const decode=mode==='decode';
+  text('#url-input-label',decode?'Base64URL input':'Text to encode');
+  text('#url-output-label',decode?($('#url-format').value==='hex'?'DECODED HEX BYTES':'DECODED TEXT'):'ENCODED BASE64URL');
+  text('#url-convert',decode?'Decode Base64URL':'Encode Base64URL');
+  $('#url-format-wrap').hidden=!decode;$('#url-padding-wrap').hidden=decode;
+  text('#url-hint',decode?'Paste one URL-safe value using A–Z, a–z, 0–9, - and _. Valid padded or unpadded input is accepted; whitespace is ignored. Up to 2 million encoded characters.':'Text is encoded as UTF-8. Padding is omitted unless selected above. Up to 1 MB (1,000,000 bytes) of UTF-8 text.');
+ }
+ modes('#url-modes',m=>{const next=m==='decode'?lastEncoded:(lastText??'');mode=m;$('#url-input').value=next;labels();run();});
+ $('#url-convert').onclick=run;
+ $('#url-input').addEventListener('input',reset);
+ $('#url-padding').onchange=run;
+ $('#url-format').onchange=()=>{labels();run();};
+ $('#url-clear').onclick=()=>{$('#url-input').value='';reset();};
+ $$('[data-url-example]').forEach(b=>b.onclick=()=>{
+  const kind=b.dataset.urlExample;
+  if(kind==='binary'){
+   $('#url-modes [data-mode=decode]').click();$('#url-format').value='hex';$('#url-input').value='-__v';
+  }else{
+   const plain=kind==='emoji'?'😀':'{"message":"Hello"}';$('#url-format').value='text';
+   $('#url-input').value=mode==='decode'?encodeText(plain,'url',false):plain;
+  }
+  labels();run();
+ });
+ $('#url-download').onclick=()=>{
+  const value=$('#url-output').value;if(!value)return;
+  const name=mode==='encode'?'parsecove-base64url.txt':$('#url-format').value==='hex'?'parsecove-decoded-hex.txt':'parsecove-decoded.txt';
+  download(value,name);
+ };
+ $('#url-bytes-download').onclick=()=>{if(decodedBytes?.length)download(decodedBytes,'parsecove-decoded.bin','application/octet-stream');};
+ labels();run();
+}
+
 if(page==='base64-to-image'||page==='image-to-base64'){
  let mode=page==='image-to-base64'?'encode':'decode',url='',bytes=null,type=null,task=0;
  function syncMode(){

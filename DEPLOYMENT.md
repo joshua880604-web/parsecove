@@ -33,6 +33,7 @@
 - `/px-to-rem/`
 - `/rem-to-px/`
 - `/base64/`
+- `/base64url-decode/`
 - `/base64-to-image/`
 - `/image-to-base64/`
 - `/about/`
@@ -58,7 +59,7 @@ Cloudflare Pages 绑定根域名，要求该域名作为 DNS zone 添加到同�
 
 ## 4. 正式上线检查
 
-- `https://parsecove.com` 及六个工具页面均可直接访问，HTTPS 正常。
+- `https://parsecove.com` 及七个工具页面均可直接访问，HTTPS 正常。
 - 页面 canonical、`/sitemap.xml` 和 `/robots.txt` 均指向 `https://parsecove.com`。
 - 在 Google Search Console 验证域名并提交 `https://parsecove.com/sitemap.xml`。无需提交临时 Pages 网址。
 - 以 Cloudflare 的部署记录、实际 HTTP 响应和浏览器访问结果判断上线是否成功；仓库推送成功本身不代表已部署到 Cloudflare。
