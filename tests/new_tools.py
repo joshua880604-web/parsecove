@@ -94,7 +94,7 @@ with sync_playwright() as p:
    assert page.evaluate('document.documentElement.scrollWidth<=innerWidth'),(width,route)
    expect(page.locator('h1')).to_have_count(1)
    expect(page.locator('link[rel=canonical]')).to_have_attribute('href','https://parsecove.com'+route)
-   schema=json.loads(page.locator('script[type="application/ld+json"]').inner_text());assert schema['@type']=='WebApplication'
+   schema=json.loads(page.locator('script[type="application/ld+json"]').inner_text());schema=next(x for x in schema['@graph'] if x['@type']=='WebApplication');assert schema['@type']=='WebApplication'
    expect(page.locator('[data-ad-slot]')).to_have_count(0)
    if width in [390,1440]:
     page.evaluate('window.scrollTo(0,0)');page.screenshot(path=str(OUT/(route.strip('/')+'-'+str(width)+'.png')),full_page=True,style='.skip:not(:focus){visibility:hidden}')

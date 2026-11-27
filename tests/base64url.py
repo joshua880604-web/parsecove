@@ -194,6 +194,7 @@ with sync_playwright() as p:
     expect(static_page.locator('#base64url-examples')).to_contain_text('-__v')
     expect(static_page.locator('#base64url-code')).to_contain_text('base64.urlsafe_b64decode')
     structured = json.loads(static_page.locator('script[type="application/ld+json"]').text_content())
+    structured = next(x for x in structured['@graph'] if x['@type'] == 'WebApplication')
     assert structured['@type'] == 'WebApplication'
     assert structured['url'] == 'https://parsecove.com/base64url-decode/'
     static.close()

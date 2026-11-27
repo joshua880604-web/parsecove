@@ -168,7 +168,8 @@ with sync_playwright() as p:
     assert article['url'] == 'https://parsecove.com' + ROUTE
     assert article['headline'] == nojs.locator('h1').inner_text()
     assert article['datePublished'] == article['dateModified'] == '2026-11-27'
-    assert article['author']['name'] == 'ParseCove'
+    author = next(x for x in graph if x['@id'] == article['author']['@id'])
+    assert author['name'] == 'ParseCove'
     assert len(next(x for x in graph if x['@type'] == 'BreadcrumbList')['itemListElement']) == 3
     static.close()
 

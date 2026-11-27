@@ -38,38 +38,6 @@ GUIDES = [{
 
 GUIDES += EXTRA_GUIDES
 
-def guide_schema(slug, origin):
-    if slug == 'guides':
-        return {
-            '@context': 'https://schema.org', '@type': 'CollectionPage',
-            'name': 'Developer guides | ParseCove', 'url': origin + '/guides/',
-            'description': 'Worked data format, CSS, encoding, image and timestamp examples connected to the ParseCove tools.',
-            'inLanguage': 'en',
-            'mainEntity': {'@type': 'ItemList', 'itemListElement': [
-                {'@type': 'ListItem', 'position': i + 1, 'name': g['title'],
-                 'url': origin + '/' + g['slug'] + '/'} for i, g in enumerate(GUIDES)
-            ]},
-        }
-    guide = next((g for g in GUIDES if g['slug'] == slug), None)
-    if not guide:
-        return None
-    canonical = origin + '/' + slug + '/'
-    return {'@context': 'https://schema.org', '@graph': [
-        {'@type': 'TechArticle', '@id': canonical + '#article',
-         'headline': guide['heading'], 'description': guide['description'],
-         'url': canonical, 'mainEntityOfPage': canonical, 'inLanguage': 'en',
-         'datePublished': guide['published'], 'dateModified': guide['published'],
-         'author': {'@type': 'Organization', 'name': 'ParseCove', 'url': origin + '/about/'},
-         'publisher': {'@type': 'Organization', 'name': 'ParseCove', 'url': origin + '/'},
-         'articleSection': guide['category'], 'isAccessibleForFree': True},
-        {'@type': 'BreadcrumbList', 'itemListElement': [
-            {'@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': origin + '/'},
-            {'@type': 'ListItem', 'position': 2, 'name': 'Guides', 'item': origin + '/guides/'},
-            {'@type': 'ListItem', 'position': 3, 'name': guide['label'], 'item': canonical},
-        ]},
-    ]}
-
-
 def guide_teaser(slug='guides/rem-vs-em'):
     guide = next(g for g in GUIDES if g['slug'] == slug)
     return f'<aside class="guide-teaser"><span class="eyebrow">WORKED GUIDE</span><h2>{html.escape(guide["heading"])}</h2><p>{html.escape(guide["description"])}</p><a class="inline-link" href="/{slug}/">Read the guide →</a></aside>'

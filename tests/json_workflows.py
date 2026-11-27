@@ -139,7 +139,8 @@ with sync_playwright() as p:
  for slug in ['json-minify','json-compare']:
   sp.goto(BASE+'/'+slug+'/');expect(sp.locator('h1')).to_be_visible()
   expect(sp.locator('link[rel="canonical"]')).to_have_attribute('href','https://parsecove.com/'+slug+'/')
-  assert json.loads(sp.locator('script[type="application/ld+json"]').text_content())['@type']=='WebApplication'
+  graph=json.loads(sp.locator('script[type="application/ld+json"]').text_content())['@graph']
+  assert any(entity['@type']=='WebApplication' for entity in graph)
   expect(sp.locator('.learn .faq details')).to_have_count(6)
   assert '9007199254740993' in sp.locator('main').text_content()
   assert '80 levels' in sp.locator('main').text_content()

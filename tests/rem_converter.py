@@ -163,6 +163,7 @@ with sync_playwright() as p:
     expect(static_page.locator('#rem-examples')).to_contain_text('1.25 × 16 = 20px')
     expect(static_page.locator('#find-root-size pre code')).to_contain_text('getComputedStyle(document.documentElement).fontSize')
     structured = json.loads(static_page.locator('script[type="application/ld+json"]').text_content())
+    structured = next(x for x in structured['@graph'] if x['@type'] == 'WebApplication')
     assert structured['@type'] == 'WebApplication'
     assert structured['url'] == 'https://parsecove.com/rem-to-px/'
     static.close()

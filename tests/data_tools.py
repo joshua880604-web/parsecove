@@ -115,7 +115,7 @@ with sync_playwright() as p:
   expect(static.locator('h1')).to_have_count(1);expect(static.locator('.faq details')).to_have_count(6)
   expect(static.locator('link[rel=canonical]')).to_have_attribute('href','https://parsecove.com'+route)
   assert 'converter' in static.locator('h1').inner_text().lower()
-  schema=json.loads(static.locator('script[type="application/ld+json"]').text_content());assert schema['@type']=='WebApplication' and schema['url']=='https://parsecove.com'+route
+  schema=json.loads(static.locator('script[type="application/ld+json"]').text_content());schema=next(x for x in schema['@graph'] if x['@type']=='WebApplication');assert schema['@type']=='WebApplication' and schema['url']=='https://parsecove.com'+route
  static_context.close();browser.close()
 
 class Links(HTMLParser):

@@ -112,6 +112,7 @@ main { max-width: 1440px; padding: 36px 40px 56px; min-height: calc(100vh - 160p
 .page-heading h1 { font-size: clamp(28px,2.7vw,36px); line-height: 1.2; margin-bottom: 12px; }
 .page-heading p { font-size: 16px; max-width: 80ch; line-height: 1.75; }
 .page-heading .eyebrow { margin-bottom: 10px; }
+.free-label { background: #eaf0ff; color: #2446b5; font-size: 12px; letter-spacing: 0; padding: 1px 7px; border-radius: 4px; margin-left: 2px; }
 .workbench { border-color: #cdd8e9; border-radius: 10px; box-shadow: 0 3px 12px #1c345006; }
 .bench-toolbar { padding: 14px 20px; min-height: 70px; }
 .segmented { background: #edf1f7; padding: 4px; border-radius: 7px; gap: 3px; }

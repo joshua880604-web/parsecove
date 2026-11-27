@@ -92,9 +92,9 @@ with sync_playwright() as p:
   expect(static.locator('link[rel=canonical]')).to_have_attribute('href','https://parsecove.com'+route)
   schema=json.loads(static.locator('script[type="application/ld+json"]').text_content())
   if '/guides/' in route:
-   assert schema['@graph'][0]['@type']=='TechArticle';assert schema['@graph'][0]['datePublished']=='2026-11-27'
+   article=next(x for x in schema['@graph'] if x['@type']=='TechArticle');assert article['datePublished']=='2026-11-27'
    expect(static.locator('.guide-byline')).to_be_visible();expect(static.locator('#format-output')).not_to_be_empty();expect(static.locator('#format-faq details')).to_have_count(4)
-  else:assert schema['@type']=='WebApplication';expect(static.locator('#rgba-output')).to_have_value('rgba(36, 76, 218, 0.5)')
+  else:assert any(x['@type']=='WebApplication' for x in schema['@graph']);expect(static.locator('#rgba-output')).to_have_value('rgba(36, 76, 218, 0.5)')
  nojs.close();assert not errors and not external and not mutations,(errors,external,mutations)
  browser.close()
 class Doc(HTMLParser):

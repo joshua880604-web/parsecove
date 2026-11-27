@@ -154,14 +154,16 @@ with sync_playwright() as p:
     article = next(x for x in schema['@graph'] if x['@type'] == 'TechArticle')
     assert article['headline'] == static_page.locator('h1').inner_text()
     assert article['datePublished'] == article['dateModified'] == '2026-11-27'
-    assert article['author']['name'] == 'ParseCove'
+    author = next(x for x in schema['@graph'] if x['@id'] == article['author']['@id'])
+    assert author['name'] == 'ParseCove'
     assert article['url'] == 'https://parsecove.com' + ROUTE
     breadcrumbs = next(x for x in schema['@graph'] if x['@type'] == 'BreadcrumbList')
     assert len(breadcrumbs['itemListElement']) == 3
     static_page.goto(BASE + '/guides/')
-    hub = json.loads(static_page.locator('script[type="application/ld+json"]').inner_text())
-    assert hub['@type'] == 'CollectionPage'
-    assert hub['mainEntity']['itemListElement'][0]['url'] == article['url']
+    hub_graph = json.loads(static_page.locator('script[type="application/ld+json"]').inner_text())['@graph']
+    hub = next(x for x in hub_graph if x['@type'] == 'CollectionPage')
+    listing = next(x for x in hub_graph if x['@id'] == hub['mainEntity']['@id'])
+    assert listing['itemListElement'][0]['url'] == article['url']
     static.close()
     assert not errors, errors
     assert not external, external
