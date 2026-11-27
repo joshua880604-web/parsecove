@@ -1,6 +1,6 @@
 # ParseCove
 
-A browser-local developer toolbox with twelve statically generated pages. Try it at [parsecove.com](https://parsecove.com/).
+A browser-local developer toolbox with thirteen statically generated pages. Try it at [parsecove.com](https://parsecove.com/).
 
 ## Use the tools
 
@@ -18,7 +18,7 @@ The tools are free to use without an account. Conversion inputs are processed in
 
 ## Read the guides
 
-[Developer guides](https://parsecove.com/guides/) connects worked explanations to the conversion tools. The first guide, [REM vs EM](https://parsecove.com/guides/rem-vs-em/), includes a root/parent/child comparison, nested font examples, source references, an in-page glossary and FAQ. The registry, static content and article metadata live in `guide_pages.py`. Guide publication dates are explicit content dates and do not change on every build.
+[Developer guides](https://parsecove.com/guides/) connects worked explanations to the conversion tools. The first guide, [REM vs EM](https://parsecove.com/guides/rem-vs-em/), includes a root/parent/child comparison, nested font examples, source references, an in-page glossary and FAQ. The registry, static content and article metadata live in `guide_pages.py`. Guide publication dates are explicit content dates and do not change on every build. [How to save a Base64 image](https://parsecove.com/guides/save-base64-image/) adds a complete PNG fixture, copyable data URL, checked JavaScript and Python download examples, troubleshooting, terms and FAQ. Its source is `image_save_guide.py`.
 
 `python3 tests/guides.py` verifies the comparison against actual browser CSS, defaults and invalid inputs, copy, navigation, static content, structured data and responsive layouts.
 
@@ -56,6 +56,8 @@ The two image routes share `image_pages.py` and the same byte-validation and enc
 The Base64URL entry point uses the same strict RFC 4648 byte parser as the existing Base64 tool. It accepts URL-safe input only. Valid binary data remains available as hex, standard Base64 and original byte downloads when it is not UTF-8. It does not parse or verify whole JWTs. Its static reference content is in `base64url_page.py`.
 
 `python3 tests/base64url.py` checks padded and unpadded values, Unicode, binary output and downloads, strict validation, both modes, metadata, static content and responsive layouts against localhost:3000. Browser tests accept an alternate origin through `PARSECOVE_TEST_URL`.
+
+`python3 tests/image_save_guide.py` verifies the full published data URL, clipboard, original-byte downloads, executable JavaScript/Python and HTML examples, article metadata, links and responsive layouts. The two image tools accept `?example=png`, `?example=jpeg` or `?example=webp` to load predefined local fixtures. Other preset values are ignored; user-provided text and files are never added to URLs.
 
 ## Publication and SEO
 

@@ -8,6 +8,15 @@ GUIDES = [{
     'description': 'Compare rem, em and px in CSS. Explore root and inherited font sizes, nested em scaling, practical examples and when each unit is useful.',
     'published': '2026-11-27',
     'category': 'CSS & layout',
+    'label': 'REM vs EM',
+}, {
+    'slug': 'guides/save-base64-image',
+    'title': 'How to Save a Base64 Image to a File — Data URL Guide',
+    'heading': 'How to save a Base64 image to a file',
+    'description': 'Save a Base64 image or data URL as its original file. Follow a complete PNG example, run JavaScript or Python code and troubleshoot common decoding errors.',
+    'published': '2026-11-27',
+    'category': 'Images & files',
+    'label': 'Save a Base64 image',
 }]
 
 
@@ -16,7 +25,7 @@ def guide_schema(slug, origin):
         return {
             '@context': 'https://schema.org', '@type': 'CollectionPage',
             'name': 'Developer guides | ParseCove', 'url': origin + '/guides/',
-            'description': 'Worked CSS examples and explanations connected to the ParseCove tools.',
+            'description': 'Worked CSS and image examples connected to the ParseCove tools.',
             'inLanguage': 'en',
             'mainEntity': {'@type': 'ItemList', 'itemListElement': [
                 {'@type': 'ListItem', 'position': i + 1, 'name': g['title'],
@@ -38,22 +47,30 @@ def guide_schema(slug, origin):
         {'@type': 'BreadcrumbList', 'itemListElement': [
             {'@type': 'ListItem', 'position': 1, 'name': 'Home', 'item': origin + '/'},
             {'@type': 'ListItem', 'position': 2, 'name': 'Guides', 'item': origin + '/guides/'},
-            {'@type': 'ListItem', 'position': 3, 'name': 'REM vs EM', 'item': canonical},
+            {'@type': 'ListItem', 'position': 3, 'name': guide['label'], 'item': canonical},
         ]},
     ]}
 
 
-def guide_teaser():
-    return '''<aside class="guide-teaser"><span class="eyebrow">WORKED GUIDE</span><h2>What changes with rem and em?</h2><p>Compare root and parent font sizes, see why nested em values compound, and choose units for your component.</p><a class="inline-link" href="/guides/rem-vs-em/">Read the REM vs EM guide →</a></aside>'''
+def guide_teaser(slug='guides/rem-vs-em'):
+    guide = next(g for g in GUIDES if g['slug'] == slug)
+    return f'<aside class="guide-teaser"><span class="eyebrow">WORKED GUIDE</span><h2>{html.escape(guide["heading"])}</h2><p>{html.escape(guide["description"])}</p><a class="inline-link" href="/{slug}/">Read the guide →</a></aside>'
 
 
-def guides_index():
-    cards = ''.join(
+def guide_cards():
+    return ''.join(
         f'<a class="guide-card" href="/{g["slug"]}/"><span class="eyebrow">{html.escape(g["category"])}</span>'
         f'<h2>{html.escape(g["title"])}</h2><p>{html.escape(g["description"])}</p>'
         '<span class="guide-card-link">Read the guide →</span></a>' for g in GUIDES
     )
-    return '''<div class="page-heading"><span class="eyebrow">UNDERSTAND THE RESULT</span><h1>Developer guides</h1><p>Worked examples, clear assumptions and small experiments you can try. Learn the CSS behind a conversion, then use the tools to check your own values.</p></div><div class="guide-directory">'''+cards+'''</div><section class="guide-hub-tools"><h2>Put the examples to work</h2><p>Use your page’s computed root font size when converting values.</p><div class="actions"><a class="button" href="/px-to-rem/">PX to REM converter</a><a class="button" href="/rem-to-px/">REM to PX converter</a></div></section>'''
+
+
+def guides_preview():
+    return '<section class="guides-preview"><span class="eyebrow">UNDERSTAND THE RESULT</span><div class="section-heading"><h2>Practical guides</h2><a class="inline-link" href="/guides/">Browse all guides →</a></div><div class="guide-directory">'+guide_cards()+'</div></section>'
+
+
+def guides_index():
+    return '''<div class="page-heading"><span class="eyebrow">UNDERSTAND THE RESULT</span><h1>Developer guides</h1><p>Worked examples, clear assumptions and small experiments you can try. Understand CSS units and encoded images, then use the tools to check your own values.</p></div><div class="guide-directory">'''+guide_cards()+'''</div><section class="guide-hub-tools"><h2>Put the examples to work</h2><p>Check CSS lengths with your root font size, or inspect an encoded image and save its original bytes.</p><div class="actions"><a class="button" href="/px-to-rem/">PX to REM converter</a><a class="button" href="/rem-to-px/">REM to PX converter</a><a class="button" href="/base64-to-image/">Base64 to image</a></div></section>'''
 
 
 def rem_em_guide(code_example, faq, copy):

@@ -310,4 +310,6 @@ if(page==='base64-to-image'||page==='image-to-base64'){
  });
  window.addEventListener('pagehide',()=>{if(url)URL.revokeObjectURL(url);});
  syncMode();reset();
+ const preset=new URLSearchParams(location.search).get('example');
+ if(['png','jpeg','webp'].includes(preset))loadImageExample(preset);
 }

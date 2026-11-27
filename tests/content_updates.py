@@ -45,7 +45,7 @@ with sync_playwright() as p:
  checks=0
  for width in [320,390,768,1024,1440]:
   page.set_viewport_size({'width':width,'height':950})
-  for route in ['/','/unix-timestamp-converter/','/px-to-rem/','/rem-to-px/','/base64/','/base64url-decode/','/base64-to-image/','/image-to-base64/','/guides/','/guides/rem-vs-em/']:
+  for route in ['/','/unix-timestamp-converter/','/px-to-rem/','/rem-to-px/','/base64/','/base64url-decode/','/base64-to-image/','/image-to-base64/','/guides/','/guides/rem-vs-em/','/guides/save-base64-image/']:
    assert page.goto(base+route).status==200
    assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'),(width,route,'overflow')
    expect(page.locator('[data-ad-slot]')).to_have_count(0)

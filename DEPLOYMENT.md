@@ -38,6 +38,7 @@
 - `/image-to-base64/`
 - `/guides/`
 - `/guides/rem-vs-em/`
+- `/guides/save-base64-image/`
 - `/about/`
 - `/privacy/`
 

@@ -22,9 +22,9 @@ with sync_playwright() as p:
 
     assert page.goto(BASE + '/guides/').status == 200
     expect(page.locator('h1')).to_have_text('Developer guides')
-    expect(page.locator('.guide-card')).to_have_count(1)
+    expect(page.locator('.guide-card')).to_have_count(2)
     page.screenshot(path=str(OUT / 'guides-desktop.png'), full_page=True)
-    page.locator('.guide-card').click()
+    page.locator('.guide-card[href="/guides/rem-vs-em/"]').click()
     expect(page.locator('h1')).to_have_text('REM vs EM: what changes, and why')
     expect(page.locator('#unit-summary')).to_have_text('Child font size: 20px × 1.25 = 25px.')
     expect(page.locator('#unit-rem-length')).to_have_text('16px')
@@ -101,7 +101,7 @@ with sync_playwright() as p:
     expect(page.locator('#terms dt')).to_have_count(5)
 
     # The guide and hub are reachable from the site, and both converters link back.
-    for route in ['/', '/px-to-rem/', '/rem-to-px/']:
+    for route in ['/px-to-rem/', '/rem-to-px/']:
         page.goto(BASE + route)
         expect(page.locator('.guide-teaser a')).to_have_attribute('href', ROUTE)
         expect(page.locator('#sidebar a[href="/guides/"]')).to_be_visible()
