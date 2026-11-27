@@ -1,1 +1,17 @@
-{"name":"parsecove","version":"1.0.0","private":true,"type":"module","scripts":{"build":"python3 build.py","test":"node --test tests/*.test.mjs"}}
+{
+  "name": "parsecove",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "python3 build.py",
+    "test": "node --test tests/*.test.mjs",
+    "vendor:data": "node scripts/build-data-parsers.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "jsonc-parser": "3.3.1",
+    "papaparse": "5.7.1",
+    "yaml": "2.9.1"
+  }
+}

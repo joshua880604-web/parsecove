@@ -1,0 +1,26 @@
+[
+  {
+    "name": "yaml",
+    "version": "2.9.1",
+    "license": "ISC",
+    "source": "https://www.npmjs.com/package/yaml/v/2.9.1",
+    "file": "dist/assets/vendor/yaml.js",
+    "sha256": "9414c7f4b4587eb15398cb66998f63ba8601031b83fa9862c864809155b1547e"
+  },
+  {
+    "name": "papaparse",
+    "version": "5.7.1",
+    "license": "MIT",
+    "source": "https://www.npmjs.com/package/papaparse/v/5.7.1",
+    "file": "dist/assets/vendor/papaparse.js",
+    "sha256": "b4ab79ec2952cf4d4bc5aecac691b3315e9be9b31476215335b66386879c1ecf"
+  },
+  {
+    "name": "jsonc-parser",
+    "version": "3.3.1",
+    "license": "MIT",
+    "source": "https://www.npmjs.com/package/jsonc-parser/v/3.3.1",
+    "file": "dist/assets/vendor/jsonc-parser.js",
+    "sha256": "148611c529445f062bc4676eac914f486e81a5532ff31b77127bc80eaa7d3114"
+  }
+]

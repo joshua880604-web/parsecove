@@ -17,6 +17,10 @@ document.addEventListener('click',e=>{if(!e.target.closest('.sidebar,.mobile-men
 if($('#tool-filter'))$('#tool-filter').addEventListener('input',()=>filter($('#tool-filter'),$$('.tools-grid .tool-card'),$('#filter-empty')));
 function download(data,name,type='text/plain;charset=utf-8'){const u=URL.createObjectURL(new Blob([data],{type}));const a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);}
 const page=document.body.dataset.page;
+if(['yaml-to-json','csv-to-json'].includes(page)){
+ const {initDataTool}=await import('./data-tools.js');
+ await initDataTool(page,{$,$$,text,showError,modes,download});
+}
 if(['hex-to-rgb','json-unescape','hex-to-text'].includes(page)){
  const {initNewTool}=await import('./new-tools.js');
  initNewTool(page,{$,$$,text,showError,modes,download});

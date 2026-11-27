@@ -1,6 +1,6 @@
 # ParseCove
 
-A browser-local developer toolbox with eighteen statically generated pages. Try it at [parsecove.com](https://parsecove.com/).
+A browser-local developer toolbox with twenty statically generated pages. Try it at [parsecove.com](https://parsecove.com/).
 
 ## Use the tools
 
@@ -38,7 +38,7 @@ Connect `joshua880604-web/parsecove` in **Cloudflare → Workers & Pages → Cre
 | Build output directory | `dist` |
 | Root directory | Leave at the repository root |
 
-No dependencies, server, Worker entrypoint, API keys or environment variables are needed for the current build. Git integration deploys future pushes to `main` automatically after the initial setup. This checkout alone does not create a Cloudflare project or authorize access to the account.
+The production build uses only Python’s standard library and the committed static assets. No server, Worker entrypoint, API keys or environment variables are needed. Pinned development dependencies reproduce the locally vendored data parsers; Cloudflare does not need to rebuild those bundles. Git integration deploys future pushes to `main` automatically after the initial setup. This checkout alone does not create a Cloudflare project or authorize access to the account.
 
 See [the deployment guide](DEPLOYMENT.md) for custom-domain setup and launch checks.
 
@@ -70,6 +70,10 @@ The Base64URL entry point uses the same strict RFC 4648 byte parser as the exist
 Tool-specific FAQ additions live in `faq_content.py`. Each answer has a stable fragment identifier and links to a relevant worked guide. The questions stay on the tool page; no separate FAQ or short glossary pages are generated.
 
 The three newer tools use `new_tool_pages.py`, `dist/assets/conversion-core.js` and `dist/assets/new-tools.js`. Their UI module loads only on their own routes. `npm test` covers original and new conversion functions; `python3 tests/new_tools.py` checks browser flows, downloads, clipboard, metadata, local processing and responsive layouts.
+
+The two data tools, [YAML ↔ JSON](https://parsecove.com/yaml-to-json/) and [CSV ↔ JSON](https://parsecove.com/csv-to-json/), support pasted input, local UTF-8 files, examples, exact-result copying and downloads. Their static descriptions and type rules live in `data_tool_pages.py`; controllers and pure conversion modules live in `dist/assets/data-*.js`, `yaml-core.js` and `csv-core.js`. Each route loads only its required local parser. `dist/assets/vendor/` includes pinned versions, upstream licenses and bundle hashes. Run `npm ci` and `npm run vendor:data` to reproduce these bundles; no CDN or conversion service is used. Strict JSON validation rejects duplicate keys, malformed Unicode and unsafe integer literals before conversion. YAML uses the 1.2 core schema; unsupported tags, merges, multiple documents, non-string mapping keys and cycles are rejected. CSV defaults to string values, validates rectangular records, and exposes type inference, headers, delimiters, nested-cell serialization, spreadsheet formula protection and output line endings as explicit choices.
+
+`npm test` includes format round trips, empty values, quoting, type preservation, limits, aliases, duplicate keys and unsafe integers. `python3 tests/data_tools.py` checks both data tools, file decoding, exact clipboard/download bytes, stale-file cancellation, local module loading, static metadata and responsive layouts.
 
 ## Publication and SEO
 
@@ -104,7 +108,7 @@ Before enabling real AdSense: obtain the account's publisher and unit IDs; revie
 
 ## Conversion references and examples
 
-The ten tool pages keep their stable URLs and include statically rendered task-specific reference sections. PX/REM common values are rendered at a 16px root for no-JavaScript readers, then updated using the selected root and precision. Numeric example buttons select the direction matching their displayed units. The two CSS converter pages share `css_pages.py` and the same conversion function; `/rem-to-px/` starts in REM mode with its own worked examples and reference table. Both pages offer CSV downloads that include the input and output units and root size.
+The twelve tool pages keep their stable URLs and include statically rendered task-specific reference sections. PX/REM common values are rendered at a 16px root for no-JavaScript readers, then updated using the selected root and precision. Numeric example buttons select the direction matching their displayed units. The two CSS converter pages share `css_pages.py` and the same conversion function; `/rem-to-px/` starts in REM mode with its own worked examples and reference table. Both pages offer CSV downloads that include the input and output units and root size.
 
 The timestamp page includes a device-clock display refreshed once per second. Pause freezes both units; copying also pauses so copied values stay visible. The display is not a synchronized time service. JavaScript and Python examples use explicit UTC instants.
 

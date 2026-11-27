@@ -16,7 +16,7 @@ with sync_playwright() as p:
  page.on('request',lambda r:requests.append(r.url))
  page.on('request',lambda r:external.append(r.url) if not r.url.startswith((BASE,'blob:','data:')) else None)
  page.on('request',lambda r:mutations.append(r.url) if r.method!='GET' else None)
- page.goto(BASE+'/');expect(page.locator('.tools-grid .tool-card')).to_have_count(10)
+ page.goto(BASE+'/');expect(page.locator('.tools-grid .tool-card')).to_have_count(12)
  assert not any('/assets/new-tools.js' in u or '/assets/conversion-core.js' in u for u in requests)
  for route in ROUTES:expect(page.locator('.tools-grid a[href="'+route+'"]').first).to_be_visible()
  page.goto(BASE+ROUTES[0]);expect(page.locator('#color-note')).to_contain_text('Add an alpha')
@@ -126,10 +126,10 @@ with sync_playwright() as p:
    if u.fragment and target in docs:assert unquote(u.fragment) in docs[target].ids,(f,href)
    link_checks+=1
  urls=[n.text for n in ET.parse(ROOT/'dist/sitemap.xml').findall('.//{http://www.sitemaps.org/schemas/sitemap/0.9}loc')]
- assert len(urls)==len(set(urls))==18 and len(docs)==19
+ assert len(urls)==len(set(urls))==20 and len(docs)==21
  for route in ROUTES:assert 'https://parsecove.com'+route in urls
  assert not errors,errors
  assert not external,external
  assert not mutations,mutations
- report={'new_routes':ROUTES,'color_alpha_and_validation':'passed','JSON_formats_empty_and_layers':'passed','HEX_binary_and_UTF8':'passed','exact_CRLF_BOM_NUL_copy_and_download':'passed','clipboard_and_downloads':'passed','safe_text_output':'passed','lazy_module_loading':'passed','static_content_and_metadata':'passed','responsive_checks':checks,'internal_link_checks':link_checks,'sitemap_urls':18,'html_files':19,'page_errors':errors,'external_requests':external,'input_upload_requests':mutations}
+ report={'new_routes':ROUTES,'color_alpha_and_validation':'passed','JSON_formats_empty_and_layers':'passed','HEX_binary_and_UTF8':'passed','exact_CRLF_BOM_NUL_copy_and_download':'passed','clipboard_and_downloads':'passed','safe_text_output':'passed','lazy_module_loading':'passed','static_content_and_metadata':'passed','responsive_checks':checks,'internal_link_checks':link_checks,'sitemap_urls':20,'html_files':21,'page_errors':errors,'external_requests':external,'input_upload_requests':mutations}
  (OUT/'browser-report.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report));browser.close()
