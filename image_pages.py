@@ -1,4 +1,5 @@
 """Shared image workbench and task-specific encoder documentation."""
+from faq_content import tool_faqs
 
 
 def image_workbench(initial_mode, icon, segmented):
@@ -86,7 +87,7 @@ def image_encoder_guide(docs, extra_section, code_example):
              'This tool reads local files you select or drop. It does not fetch remote image URLs. Save the image to your device, then choose that file here.'),
             ('Does my image get uploaded?',
              'The image bytes are read and encoded on your device. Tool inputs are not sent to a conversion API. The website itself still makes normal requests to load its pages, scripts and local examples.'),
-        ],
+        ] + tool_faqs('image-to-base64'),
         '<a href="https://www.rfc-editor.org/rfc/rfc4648">RFC 4648: Base64</a> · <a href="https://www.rfc-editor.org/rfc/rfc2397">RFC 2397: Data URLs</a>',
     )
     steps = ('<ol class="encoding-steps"><li>Choose an image or try one of the complete PNG, JPEG or WebP examples above.</li>'

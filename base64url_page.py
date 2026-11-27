@@ -1,4 +1,5 @@
 """Static content for the URL-safe Base64 entry point."""
+from faq_content import tool_faqs
 
 
 def base64url_workbench(icon, segmented, copy):
@@ -28,7 +29,7 @@ def base64url_guide(docs, extra_section, code_example):
             ('Why does a valid value produce no text?', 'An encoded value can contain binary bytes that are not valid UTF-8. The tool then leaves the text result empty and explains the issue. Choose Hex bytes or download the original bytes. The standard Base64 comparison still represents the same bytes.'),
             ('Can I decode a JWT?', 'Paste only one encoded segment from a token, such as a header or payload. A complete dot-separated token is not one Base64URL value. Decoding a segment does not verify a signature, validate claims or establish authenticity.'),
             ('Are inputs uploaded or saved?', 'Conversion runs in your browser. The application does not upload inputs, store input history or put values in the URL. Clipboard and downloads are used only when you press their buttons. Normal website requests still go to the hosting provider.'),
-        ],
+        ] + tool_faqs('base64url-decode'),
         '<a href="https://www.rfc-editor.org/rfc/rfc4648#section-5">RFC 4648 §5: URL-safe alphabet</a> · <a href="https://www.rfc-editor.org/rfc/rfc7519">RFC 7519: JWT</a>',
     )
     reference = extra_section(

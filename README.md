@@ -65,6 +65,8 @@ The Base64URL entry point uses the same strict RFC 4648 byte parser as the exist
 
 `python3 tests/base64_errors_guide.py` checks the nine staged results, clearing and clipboard, executable published code, tool handoffs, allowlisted presets, metadata and responsive layouts. The text decoder accepts the fixed `?example=one-byte`, `unpadded`, `bad-padding`, `bad-character`, `url-safe` and `trailing-bits` examples. The Base64URL tool accepts `emoji`, `json` and `binary` examples. Unknown presets are ignored; custom input is never serialized into links.
 
+Tool-specific FAQ additions live in `faq_content.py`. Each answer has a stable fragment identifier and links to a relevant worked guide. The questions stay on the tool page; no separate FAQ or short glossary pages are generated.
+
 ## Publication and SEO
 
 The canonical origin is `https://parsecove.com`, defined in `build.py`. DNS validation and HTTPS issuance must finish before the custom domain serves traffic. The site includes indexable static descriptions, examples, source references and a sitemap. Submit the production-domain sitemap to Search Console after launch. The existing `.openai/hosting.json` records the previous Sites deployment; Cloudflare Pages uses the build settings above and the contents of `dist`. No traffic, ranking, or earnings claims are made.
