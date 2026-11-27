@@ -1,6 +1,17 @@
 # ParseCove
 
-A browser-local developer toolbox with seven statically generated pages. The production domain is `https://parsecove.com`.
+A browser-local developer toolbox with seven statically generated pages. Try it at [parsecove.com](https://parsecove.com/).
+
+## Use the tools
+
+| Tool | What it does |
+| --- | --- |
+| [Unix timestamp converter](https://parsecove.com/unix-timestamp-converter/) | Convert seconds or milliseconds to dates, convert timezone-explicit dates to timestamps, and check current Unix time. |
+| [PX to REM converter](https://parsecove.com/px-to-rem/) | Convert PX to REM or REM to PX with a custom root font size, including lists of values. |
+| [Base64 decoder and encoder](https://parsecove.com/base64/) | Decode UTF-8 text or encode it using standard Base64 or Base64URL, with explicit padding controls and validation. |
+| [Base64 to image converter](https://parsecove.com/base64-to-image/) | Preview PNG, JPEG, GIF or WebP bytes and download the original image, or encode a local image as Base64. |
+
+The tools are free to use without an account. Conversion inputs are processed in your browser; they are not uploaded to a conversion API. Supported formats, size limits and validation rules are documented on each tool page and below.
 
 ## Deploy to Cloudflare Pages
 
