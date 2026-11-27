@@ -74,23 +74,114 @@ if(page==='base64'){
  modes('#b64-modes',m=>{const previous=$('#b64-output').value;mode=m;if(previous)$('#b64-input').value=previous;text('#b64-input-label',m==='decode'?'Base64 input':'Text to encode');text('#b64-result-label',m==='decode'?'DECODED TEXT':'ENCODED BASE64');text('#b64-convert',m==='decode'?'Decode text':'Encode text');$('#b64-padding').disabled=m==='decode';run();});$('#b64-padding').disabled=true;
  $('#b64-convert').onclick=run;$('#b64-variant').onchange=run;$('#b64-padding').onchange=run;$('#b64-input').addEventListener('input',()=>{$('#b64-output').value='';text('#b64-stats','');showError('#b64-error',null);});$('#b64-sample').onclick=()=>{$('#b64-input').value=mode==='decode'?encodeText('Hello, 世界 👋',$('#b64-variant').value):'Hello, 世界 👋';run();};$('#b64-clear').onclick=()=>{$('#b64-input').value='';run();};run();
 }
-if(page==='base64-to-image'){
- let mode='decode',url='',bytes=null,type=null,task=0;
- function reset(){task++;if(url)URL.revokeObjectURL(url);url='';bytes=null;type=null;$('#image-output').hidden=true;$('#image-output').removeAttribute('src');$('#image-empty').hidden=false;$('#image-meta').hidden=true;$('#image-download').hidden=true;$('#image-download').removeAttribute('href');$('#image-text-wrap').hidden=true;$('#image-text').value='';text('#image-status','Waiting for input');showError('#image-error',null);$('#image-warning').hidden=true;$('#image-error-help').hidden=true;$('#image-preservation').hidden=true;}
- function encoded(){if(!bytes||mode!=='encode')return;const raw=toBase64(bytes),uri=`data:${type.mime};base64,${raw}`;const f=$('#image-format').value;$('#image-text').value=f==='raw'?raw:f==='html'?`<img src="${uri}" alt="">`:f==='css'?`background-image: url("${uri}");`:uri;$('#image-text-wrap').hidden=false;}
+if(page==='base64-to-image'||page==='image-to-base64'){
+ let mode=page==='image-to-base64'?'encode':'decode',url='',bytes=null,type=null,task=0;
+ function syncMode(){
+  $('#image-decode-input').hidden=mode!=='decode';
+  $('#image-encode-input').hidden=mode!=='encode';
+  text('#image-result-title',mode==='encode'?'IMAGE TO BASE64':'IMAGE PREVIEW');
+  $('#image-download').classList.toggle('primary',mode==='decode');
+  text('#image-error-title',mode==='encode'?'Check the file':'Check the source');
+  text('#image-error-detail',mode==='encode'?'Choose a valid PNG, JPEG, GIF or WebP image within the size and preview limits.':'Paste the Base64 value or a data URI, not a complete HTML tag or JSON response. The decoded bytes must be a supported image.');
+  $('#image-error-link').href=mode==='encode'?(page==='image-to-base64'?'#encoding-help':'/image-to-base64/#encoding-help'):(page==='base64-to-image'?'#image-troubleshooting':'/base64-to-image/#image-troubleshooting');
+ }
+ function reset(){
+  task++;
+  if(url)URL.revokeObjectURL(url);
+  url='';bytes=null;type=null;
+  $('#image-output').hidden=true;$('#image-output').removeAttribute('src');
+  $('#image-empty').hidden=false;$('#image-meta').hidden=true;
+  $('#image-download').hidden=true;$('#image-download').removeAttribute('href');
+  $('#image-text-wrap').hidden=mode!=='encode';$('#image-text').value='';
+  $('#image-text-copy').disabled=true;$('#image-text-download').disabled=true;
+  text('#image-file-name','No image selected.');
+  for(const id of ['#image-mime','#image-dimensions','#image-size'])text(id,'');
+  text('#image-status',mode==='encode'?'Waiting for an image':'Waiting for input');
+  showError('#image-error',null);$('#image-warning').hidden=true;
+  $('#image-error-help').hidden=true;$('#image-preservation').hidden=true;
+ }
+ function encoded(){
+  if(!bytes||mode!=='encode')return;
+  const raw=toBase64(bytes),uri=`data:${type.mime};base64,${raw}`,format=$('#image-format').value;
+  $('#image-text').value=format==='raw'?raw:format==='html'?`<img src="${uri}" alt="">`:format==='css'?`background-image: url("${uri}");`:uri;
+  $('#image-text-wrap').hidden=false;
+  $('#image-text-copy').disabled=false;$('#image-text-download').disabled=false;
+ }
  async function display(info,ticket){
-  const u=URL.createObjectURL(new Blob([info.bytes],{type:info.mime}));const probe=new Image();
-  try{probe.src=u;await probe.decode();if(probe.naturalWidth*probe.naturalHeight>40000000)throw Error('Image dimensions exceed the 40-megapixel preview limit.');}catch(e){URL.revokeObjectURL(u);throw Error(e.message.includes('megapixel')?e.message:'The bytes have an image signature, but your browser could not decode this image.');}
-  if(ticket!==task){URL.revokeObjectURL(u);return;}
-  url=u;bytes=info.bytes;type=info;$('#image-output').src=u;$('#image-output').hidden=false;$('#image-empty').hidden=true;$('#image-meta').hidden=false;$('#image-download').href=u;$('#image-download').download=`parsecove-image.${info.ext}`;$('#image-download').hidden=false;
-  text('#image-status','Ready');text('#image-mime',info.mime);text('#image-dimensions',`${probe.naturalWidth} × ${probe.naturalHeight}`);text('#image-size',`${info.bytes.length.toLocaleString()} B`);$('#image-preservation').hidden=false;
+  const candidate=URL.createObjectURL(new Blob([info.bytes],{type:info.mime})),probe=new Image();
+  try{
+   probe.src=candidate;await probe.decode();
+   if(probe.naturalWidth*probe.naturalHeight>40000000)throw Error('Image dimensions exceed the 40-megapixel preview limit.');
+  }catch(e){
+   URL.revokeObjectURL(candidate);
+   throw Error(e.message.includes('megapixel')?e.message:'The bytes have an image signature, but your browser could not decode this image.');
+  }
+  if(ticket!==task){URL.revokeObjectURL(candidate);return;}
+  url=candidate;bytes=info.bytes;type=info;
+  $('#image-output').src=url;$('#image-output').hidden=false;$('#image-empty').hidden=true;
+  $('#image-meta').hidden=false;$('#image-download').href=url;
+  $('#image-download').download=`parsecove-image.${info.ext}`;$('#image-download').hidden=false;
+  text('#image-status','Ready');text('#image-mime',info.mime);
+  text('#image-dimensions',`${probe.naturalWidth} × ${probe.naturalHeight}`);
+  text('#image-size',`${info.bytes.length.toLocaleString()} B`);$('#image-preservation').hidden=false;
   if(info.mismatch){text('#image-warning',`Declared type ${info.declared} differs from detected ${info.mime}. Download uses the detected format.`);$('#image-warning').hidden=false;}
   encoded();
  }
- async function decode(){reset();const ticket=task;if(!$('#image-input').value.trim())return;try{const info=parseImage($('#image-input').value);text('#image-status','Checking image…');await display(info,ticket);}catch(e){if(ticket===task){text('#image-status','Check your input');showError('#image-error',e);$('#image-error-help').hidden=false;}}}
- async function file(f){reset();const ticket=task;if(!f)return;try{if(f.size>10485760)throw Error('Choose an image of 10 MB or smaller.');const data=new Uint8Array(await f.arrayBuffer());if(ticket!==task)return;const info={...detectImage(data),bytes:data};text('#image-status','Checking image…');await display(info,ticket);}catch(e){if(ticket===task){text('#image-status','Check your file');showError('#image-error',e);$('#image-error-help').hidden=false;}}}
- modes('#image-modes',m=>{mode=m;reset();$('#image-decode-input').hidden=m!=='decode';$('#image-encode-input').hidden=m!=='encode';$('#image-file').value='';});$('#image-convert').onclick=decode;$('#image-input').addEventListener('input',reset);async function loadImageExample(key){try{const {examples}=await import('./image-examples.js');const sample=examples[key];if(!sample)throw Error('Unknown image example.');$('#image-input').value=`data:${sample.mime};base64,${sample.base64}`;await decode();}catch(e){showError('#image-error',Error('The local example could not be loaded. Reload the page or try an image from your device.'));}}
- $('#image-sample').onclick=()=>loadImageExample('png');$$('[data-image-example]').forEach(b=>b.onclick=()=>loadImageExample(b.dataset.imageExample));$('#image-file').onchange=e=>file(e.target.files[0]);$('#image-format').onchange=encoded;$('#image-clear').onclick=()=>{reset();$('#image-input').value='';$('#image-file').value='';};
- const drop=$('#image-drop');['dragenter','dragover'].forEach(e=>drop.addEventListener(e,event=>{event.preventDefault();drop.classList.add('dragging');}));['dragleave','drop'].forEach(e=>drop.addEventListener(e,event=>{event.preventDefault();drop.classList.remove('dragging');}));drop.addEventListener('drop',event=>{const files=event.dataTransfer.files;if(files.length!==1){reset();showError('#image-error',Error('Choose one image at a time.'));return;}$('#image-file').value='';file(files[0]);});
+ async function decode(){
+  reset();const ticket=task;
+  if(!$('#image-input').value.trim())return;
+  try{
+   const info=parseImage($('#image-input').value);text('#image-status','Checking image…');await display(info,ticket);
+  }catch(e){if(ticket===task){text('#image-status','Check your input');showError('#image-error',e);$('#image-error-help').hidden=false;}}
+ }
+ async function file(selected){
+  reset();const ticket=task;
+  if(!selected)return;
+  text('#image-file-name',selected.name);
+  try{
+   if(selected.size>10485760)throw Error('Choose an image of 10 MB or smaller.');
+   const data=new Uint8Array(await selected.arrayBuffer());
+   if(ticket!==task)return;
+   const info={...detectImage(data),bytes:data};
+   text('#image-status','Checking image…');await display(info,ticket);
+  }catch(e){if(ticket===task){text('#image-status','Check your file');showError('#image-error',e);$('#image-error-help').hidden=false;}}
+ }
+ async function loadImageExample(key){
+  reset();const ticket=task,exampleMode=mode;text('#image-status','Loading local example…');
+  try{
+   const {examples}=await import('./image-examples.js');
+   if(ticket!==task)return;
+   const sample=examples[key];if(!sample)throw Error('Unknown image example.');
+   if(exampleMode==='encode'){
+    const info=parseImage(sample.base64);
+    $('#image-file').value='';
+    await file(new File([info.bytes],`example-${key}.${info.ext}`,{type:info.mime}));
+   }else{
+    $('#image-input').value=`data:${sample.mime};base64,${sample.base64}`;await decode();
+   }
+  }catch(e){if(ticket===task){showError('#image-error',Error('The local example could not be loaded. Reload the page or try an image from your device.'));text('#image-status','Check the example');}}
+ }
+ modes('#image-modes',next=>{mode=next;syncMode();reset();$('#image-file').value='';});
+ $('#image-convert').onclick=decode;$('#image-input').addEventListener('input',reset);
+ $('#image-sample').onclick=()=>loadImageExample('png');
+ $$('[data-image-example]').forEach(button=>button.onclick=()=>loadImageExample(button.dataset.imageExample));
+ $$('[data-image-encode-example]').forEach(button=>button.onclick=()=>loadImageExample(button.dataset.imageEncodeExample));
+ $('#image-file').onchange=event=>file(event.target.files[0]);$('#image-format').onchange=encoded;
+ $('#image-text-download').onclick=()=>{
+  const value=$('#image-text').value;if(!value)return;
+  const format=$('#image-format').value;
+  const name=format==='html'?'parsecove-image.html':format==='css'?'parsecove-image.css':format==='raw'?'parsecove-image-base64.txt':'parsecove-image-data-url.txt';
+  download(value,name);
+ };
+ $('#image-clear').onclick=()=>{reset();$('#image-input').value='';$('#image-file').value='';};
+ const drop=$('#image-drop');
+ ['dragenter','dragover'].forEach(name=>drop.addEventListener(name,event=>{event.preventDefault();drop.classList.add('dragging');}));
+ ['dragleave','drop'].forEach(name=>drop.addEventListener(name,event=>{event.preventDefault();drop.classList.remove('dragging');}));
+ drop.addEventListener('drop',event=>{
+  const files=event.dataTransfer.files;
+  if(files.length!==1){reset();showError('#image-error',Error('Choose one image at a time.'));return;}
+  $('#image-file').value='';file(files[0]);
+ });
  window.addEventListener('pagehide',()=>{if(url)URL.revokeObjectURL(url);});
+ syncMode();reset();
 }

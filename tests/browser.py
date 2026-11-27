@@ -2,6 +2,7 @@ from playwright.sync_api import sync_playwright,expect
 from pathlib import Path
 import json
 out=Path('/workspace/work/bytebench')
+out.mkdir(parents=True,exist_ok=True)
 with sync_playwright() as p:
  browser=p.chromium.launch(executable_path='/usr/bin/chromium',headless=True,args=['--no-sandbox'])
  context=browser.new_context(viewport={'width':1440,'height':1000},accept_downloads=True)
@@ -11,7 +12,7 @@ with sync_playwright() as p:
  base='http://127.0.0.1:3000'
  assert page.goto(base).status==200
  page.screenshot(path=str(out/'home-desktop.png'),full_page=True)
- page.locator('#tool-filter').fill('image');expect(page.locator('.tools-grid .tool-card:visible')).to_have_count(1)
+ page.locator('#tool-filter').fill('image');expect(page.locator('.tools-grid .tool-card:visible')).to_have_count(2)
  page.get_by_role('link',name='Base64 to image',exact=False).last # no click needed
  page.goto(base+'/unix-timestamp-converter/')
  expect(page.locator('#time-iso')).to_have_text('2023-11-14T22:13:20.000Z')
@@ -40,7 +41,7 @@ with sync_playwright() as p:
  page.get_by_role('button',name='Base64 to image',exact=True).click();page.locator('#image-input').fill('PHN2Zz48L3N2Zz4=');page.locator('#image-convert').click();expect(page.locator('#image-error')).to_be_visible();expect(page.locator('#image-download')).to_be_hidden()
  for width in [1440,390]:
   page.set_viewport_size({'width':width,'height':900})
-  for route in ['/','/unix-timestamp-converter/','/px-to-rem/','/base64/','/base64-to-image/','/privacy/','/about/']:
+  for route in ['/','/unix-timestamp-converter/','/px-to-rem/','/base64/','/base64-to-image/','/image-to-base64/','/privacy/','/about/']:
    r=page.goto(base+route);assert r.status==200
    assert page.locator('h1').count()==1
    assert page.locator('link[rel=canonical]').count()==1
@@ -49,7 +50,7 @@ with sync_playwright() as p:
    page.goto(base);page.screenshot(path=str(out/'home-mobile.png'),full_page=True)
    page.locator('.mobile-menu').click();expect(page.locator('#sidebar')).to_have_class(__import__('re').compile('open'))
    page.locator('.sidebar-close').click()
-   page.locator('.search-trigger').click();page.locator('#global-search').fill('base64');expect(page.locator('#search-list a:visible')).to_have_count(2);page.locator('#search-close').click()
+   page.locator('.search-trigger').click();page.locator('#global-search').fill('base64');expect(page.locator('#search-list a:visible')).to_have_count(3);page.locator('#search-close').click()
  assert not errors,errors
  assert not external,external
  print(json.dumps({'browser_checks':'passed','viewport_widths':[1440,390],'external_app_requests':external,'page_errors':errors,'screenshots':str(out)}))

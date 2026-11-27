@@ -1,6 +1,6 @@
 # ParseCove
 
-A browser-local developer toolbox with seven statically generated pages. Try it at [parsecove.com](https://parsecove.com/).
+A browser-local developer toolbox with eight statically generated pages. Try it at [parsecove.com](https://parsecove.com/).
 
 ## Use the tools
 
@@ -10,6 +10,7 @@ A browser-local developer toolbox with seven statically generated pages. Try it 
 | [PX to REM converter](https://parsecove.com/px-to-rem/) | Convert PX to REM or REM to PX with a custom root font size, including lists of values. |
 | [Base64 decoder and encoder](https://parsecove.com/base64/) | Decode UTF-8 text or encode it using standard Base64 or Base64URL, with explicit padding controls and validation. |
 | [Base64 to image converter](https://parsecove.com/base64-to-image/) | Preview PNG, JPEG, GIF or WebP bytes and download the original image, or encode a local image as Base64. |
+| [Image to Base64 converter](https://parsecove.com/image-to-base64/) | Start with an image file and copy or download a complete data URL, raw Base64, HTML image tag or CSS background declaration. |
 
 The tools are free to use without an account. Conversion inputs are processed in your browser; they are not uploaded to a conversion API. Supported formats, size limits and validation rules are documented on each tool page and below.
 
@@ -37,6 +38,10 @@ See [the deployment guide](DEPLOYMENT.md) for custom-domain setup and launch che
 - `python3 tests/browser.py` runs browser flows against localhost:3000 with Chromium installed at `/usr/bin/chromium`.
 
 Conversion logic is in `dist/assets/core.js`. UI behavior is in `dist/assets/app.js`. All inputs stay in browser memory. No external scripts, analytics, fonts, APIs, cookies, or input history are added by the application. Hosting access controls may require sign-in independently of the application.
+
+The two image routes share `image_pages.py` and the same byte-validation and encoding logic. `/base64-to-image/` starts with Base64 input; `/image-to-base64/` starts with a local file. The encoder offers complete local examples, clipboard output and text downloads for data URLs, raw Base64, HTML and CSS. It does not fetch remote image URLs or convert image formats.
+
+`python3 tests/image_encoder.py` verifies file selection, PNG/JPEG/GIF/WebP byte round trips, four output formats and downloads, clipboard copy, invalid-file clearing, drag and drop, mode switching, metadata, internal links and responsive layouts against localhost:3000.
 
 ## Publication and SEO
 
