@@ -1,6 +1,6 @@
 from playwright.sync_api import sync_playwright,expect
 from pathlib import Path
-import json
+import json,os
 out=Path('/workspace/work/bytebench')
 out.mkdir(parents=True,exist_ok=True)
 with sync_playwright() as p:
@@ -8,8 +8,8 @@ with sync_playwright() as p:
  context=browser.new_context(viewport={'width':1440,'height':1000},accept_downloads=True)
  page=context.new_page();errors=[];external=[]
  page.on('pageerror',lambda e:errors.append(str(e)))
- page.on('request',lambda r:external.append(r.url) if not r.url.startswith(('http://127.0.0.1:3000','blob:','data:')) else None)
- base='http://127.0.0.1:3000'
+ base=os.environ.get('PARSECOVE_TEST_URL','http://127.0.0.1:3000').rstrip('/')
+ page.on('request',lambda r:external.append(r.url) if not r.url.startswith((base,'blob:','data:')) else None)
  assert page.goto(base).status==200
  page.screenshot(path=str(out/'home-desktop.png'),full_page=True)
  page.locator('#tool-filter').fill('image');expect(page.locator('.tools-grid .tool-card:visible')).to_have_count(2)
@@ -41,7 +41,7 @@ with sync_playwright() as p:
  page.get_by_role('button',name='Base64 to image',exact=True).click();page.locator('#image-input').fill('PHN2Zz48L3N2Zz4=');page.locator('#image-convert').click();expect(page.locator('#image-error')).to_be_visible();expect(page.locator('#image-download')).to_be_hidden()
  for width in [1440,390]:
   page.set_viewport_size({'width':width,'height':900})
-  for route in ['/','/unix-timestamp-converter/','/px-to-rem/','/base64/','/base64-to-image/','/image-to-base64/','/privacy/','/about/']:
+  for route in ['/','/unix-timestamp-converter/','/px-to-rem/','/rem-to-px/','/base64/','/base64-to-image/','/image-to-base64/','/privacy/','/about/']:
    r=page.goto(base+route);assert r.status==200
    assert page.locator('h1').count()==1
    assert page.locator('link[rel=canonical]').count()==1

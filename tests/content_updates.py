@@ -1,15 +1,15 @@
 from pathlib import Path
 from playwright.sync_api import sync_playwright,expect
 from datetime import datetime,timezone
-import hashlib,json,re
+import hashlib,json,re,os
 out=Path('/workspace/work/parsecove-content-qa');out.mkdir(exist_ok=True)
 with sync_playwright() as p:
  browser=p.chromium.launch(executable_path='/usr/bin/chromium',headless=True,args=['--no-sandbox'])
  context=browser.new_context(viewport={'width':1440,'height':1000},permissions=['clipboard-read','clipboard-write'],accept_downloads=True)
  page=context.new_page();errors=[];external=[]
  page.on('pageerror',lambda e:errors.append(str(e)))
- page.on('request',lambda r:external.append(r.url) if not r.url.startswith(('http://127.0.0.1:3000','blob:','data:')) else None)
- base='http://127.0.0.1:3000'
+ base=os.environ.get('PARSECOVE_TEST_URL','http://127.0.0.1:3000').rstrip('/')
+ page.on('request',lambda r:external.append(r.url) if not r.url.startswith((base,'blob:','data:')) else None)
  page.clock.install(time=datetime(2026,11,26,12,0,tzinfo=timezone.utc))
  page.goto(base+'/unix-timestamp-converter/')
  first=page.locator('#clock-ms').input_value();assert len(first)==13
@@ -45,7 +45,7 @@ with sync_playwright() as p:
  checks=0
  for width in [320,390,768,1024,1440]:
   page.set_viewport_size({'width':width,'height':950})
-  for route in ['/','/unix-timestamp-converter/','/px-to-rem/','/base64/','/base64-to-image/','/image-to-base64/']:
+  for route in ['/','/unix-timestamp-converter/','/px-to-rem/','/rem-to-px/','/base64/','/base64-to-image/','/image-to-base64/']:
    assert page.goto(base+route).status==200
    assert page.evaluate('document.documentElement.scrollWidth <= innerWidth'),(width,route,'overflow')
    expect(page.locator('[data-ad-slot]')).to_have_count(0)

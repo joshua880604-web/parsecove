@@ -1,6 +1,6 @@
 # ParseCove
 
-A browser-local developer toolbox with eight statically generated pages. Try it at [parsecove.com](https://parsecove.com/).
+A browser-local developer toolbox with nine statically generated pages. Try it at [parsecove.com](https://parsecove.com/).
 
 ## Use the tools
 
@@ -8,6 +8,7 @@ A browser-local developer toolbox with eight statically generated pages. Try it 
 | --- | --- |
 | [Unix timestamp converter](https://parsecove.com/unix-timestamp-converter/) | Convert seconds or milliseconds to dates, convert timezone-explicit dates to timestamps, and check current Unix time. |
 | [PX to REM converter](https://parsecove.com/px-to-rem/) | Convert PX to REM or REM to PX with a custom root font size, including lists of values. |
+| [REM to PX converter](https://parsecove.com/rem-to-px/) | Start with REM values, set the computed root font size, and copy or download pixel results as CSV. |
 | [Base64 decoder and encoder](https://parsecove.com/base64/) | Decode UTF-8 text or encode it using standard Base64 or Base64URL, with explicit padding controls and validation. |
 | [Base64 to image converter](https://parsecove.com/base64-to-image/) | Preview PNG, JPEG, GIF or WebP bytes and download the original image, or encode a local image as Base64. |
 | [Image to Base64 converter](https://parsecove.com/image-to-base64/) | Start with an image file and copy or download a complete data URL, raw Base64, HTML image tag or CSS background declaration. |
@@ -43,6 +44,8 @@ The two image routes share `image_pages.py` and the same byte-validation and enc
 
 `python3 tests/image_encoder.py` verifies file selection, PNG/JPEG/GIF/WebP byte round trips, four output formats and downloads, clipboard copy, invalid-file clearing, drag and drop, mode switching, metadata, internal links and responsive layouts against localhost:3000.
 
+`python3 tests/rem_converter.py` checks default and batch conversion, custom roots, rounding, quick examples, clipboard and CSV output, invalid-input clearing, both modes, static metadata and responsive layouts against localhost:3000.
+
 ## Publication and SEO
 
 The canonical origin is `https://parsecove.com`, defined in `build.py`. DNS validation and HTTPS issuance must finish before the custom domain serves traffic. The site includes indexable static descriptions, examples, source references and a sitemap. Submit the production-domain sitemap to Search Console after launch. The existing `.openai/hosting.json` records the previous Sites deployment; Cloudflare Pages uses the build settings above and the contents of `dist`. No traffic, ranking, or earnings claims are made.
@@ -76,7 +79,7 @@ Before enabling real AdSense: obtain the account's publisher and unit IDs; revie
 
 ## Conversion references and examples
 
-The four tool pages keep their stable URLs and include statically rendered task-specific reference sections. PX/REM common values are rendered at a 16px root for no-JavaScript readers, then updated using the selected root and precision. Numeric example buttons always select PX-to-REM mode explicitly.
+The six tool pages keep their stable URLs and include statically rendered task-specific reference sections. PX/REM common values are rendered at a 16px root for no-JavaScript readers, then updated using the selected root and precision. Numeric example buttons select the direction matching their displayed units. The two CSS converter pages share `css_pages.py` and the same conversion function; `/rem-to-px/` starts in REM mode with its own worked examples and reference table. Both pages offer CSV downloads that include the input and output units and root size.
 
 The timestamp page includes a device-clock display refreshed once per second. Pause freezes both units; copying also pauses so copied values stay visible. The display is not a synchronized time service. JavaScript and Python examples use explicit UTC instants.
 

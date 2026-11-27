@@ -50,19 +50,49 @@ if(page==='unix-timestamp-converter'){
  $('#time-clear').onclick=()=>{$(mode==='timestamp'?'#timestamp-input':mode==='date'?'#iso-input':'#batch-input').value='';run();};
  $('#batch-download').onclick=()=>{if(batchCSV)download(batchCSV,'parsecove-timestamps.csv','text/csv;charset=utf-8');};run();
 }
-if(page==='px-to-rem'){
- let direction='px';
- function run(){showError('#px-error',null);$('#px-output').value='';text('#px-value','');text('#px-equation','');$('#px-preview').style.fontSize='24px';try{
-  const base=$('#px-base').value,precision=+$('#px-precision').value;const rows=convertUnits($('#px-input').value,base,direction,precision),unit=direction==='px'?'rem':'px';
-  const common=JSON.parse($('#px-table').dataset.values),half=common.length/2;const table=$('#px-table');table.replaceChildren();
-  for(let i=0;i<half;i++){const tr=document.createElement('tr');for(const n of [common[i],common[i+half]]){for(const val of [`${n}px`,`${Number((n/+base).toFixed(precision))}rem`]){const td=document.createElement('td');td.textContent=val;tr.append(td);}}table.append(tr);}text('#px-table-base',`At a ${base}px root size`);
-  if(!rows.length)return;
-  $('#px-output').value=rows.map(r=>`${r.output}${unit}`).join('\n');
-  const first=rows[0],span=document.createElement('span');span.textContent=unit;$('#px-value').textContent=first.output;$('#px-value').append(span);
-  text('#px-equation',rows.length===1?`${first.input}${direction==='px'?'px':'rem'} ${direction==='px'?'÷':'×'} ${base} = ${first.output}${unit}`:`${rows.length} values converted · ${precision} decimal places maximum`);
-  const size=direction==='px'?first.input:first.value;$('#px-preview').style.fontSize=`${Math.max(8,Math.min(72,Math.abs(size)))}px`;
- }catch(e){$('#px-table').replaceChildren();text('#px-table-base','Set a valid root size');showError('#px-error',e);}}
- modes('#px-modes',m=>{direction=m;text('#px-input-label',m==='px'?'Pixels':'REM values');run();});['#px-base','#px-input','#px-precision'].forEach(id=>$(id).addEventListener('input',run));$('#px-sample').onclick=()=>{$('#px-input').value=direction==='px'?'4, 8, 12, 16, 24, 32, 48, 64':'0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4';run();};$('#px-clear').onclick=()=>{$('#px-input').value='';run();};$$('[data-px-quick]').forEach(b=>b.onclick=()=>{$('#px-modes [data-mode=px]').click();$('#px-input').value=b.dataset.pxQuick;run();});run();
+if(page==='px-to-rem'||page==='rem-to-px'){
+ let direction=page==='rem-to-px'?'rem':'px',conversionCSV='';
+ function run(){
+  showError('#px-error',null);$('#px-output').value='';text('#px-value','');text('#px-equation','');$('#px-preview').style.fontSize='24px';
+  conversionCSV='';$('#px-download').disabled=true;
+  const table=$('#px-table');let referenceReady=false;
+  try{
+   const base=$('#px-base').value,precision=+$('#px-precision').value;
+   const common=JSON.parse(table.dataset.values),tableDirection=table.dataset.sourceUnit;
+   const references=convertUnits(common.join(' '),base,tableDirection,precision),half=references.length/2;
+   const tableSource=tableDirection==='px'?'px':'rem',tableTarget=tableDirection==='px'?'rem':'px';
+   table.replaceChildren();
+   for(let i=0;i<half;i++){
+    const tr=document.createElement('tr');
+    for(const row of [references[i],references[i+half]]){
+     for(const value of [`${row.input}${tableSource}`,`${row.output}${tableTarget}`]){
+      const td=document.createElement('td');td.textContent=value;tr.append(td);
+     }
+    }
+    table.append(tr);
+   }
+   text('#px-table-base',`At a ${Number(base)}px root size`);referenceReady=true;
+   const rows=convertUnits($('#px-input').value,base,direction,precision);
+   if(!rows.length)return;
+   const source=direction==='px'?'px':'rem',unit=direction==='px'?'rem':'px';
+   $('#px-output').value=rows.map(r=>`${r.output}${unit}`).join('\n');
+   const first=rows[0],span=document.createElement('span');span.textContent=unit;$('#px-value').textContent=first.output;$('#px-value').append(span);
+   text('#px-equation',rows.length===1?`${first.input}${source} ${direction==='px'?'÷':'×'} ${Number(base)} = ${first.output}${unit}`:`${rows.length} values converted · ${precision} decimal places maximum`);
+   const size=direction==='px'?first.input:first.value;$('#px-preview').style.fontSize=`${Math.max(8,Math.min(72,Math.abs(size)))}px`;
+   conversionCSV=csv([['input','input_unit','root_px','output','output_unit'],...rows.map(r=>[r.input,source,Number(base),r.output,unit])]);
+   $('#px-download').disabled=false;
+  }catch(e){
+   if(!referenceReady){table.replaceChildren();text('#px-table-base','Set a valid root size');}
+   showError('#px-error',e);
+  }
+ }
+ modes('#px-modes',m=>{direction=m;text('#px-input-label',m==='px'?'Pixels':'REM values');run();});
+ ['#px-base','#px-input','#px-precision'].forEach(id=>$(id).addEventListener('input',run));
+ $('#px-sample').onclick=()=>{$('#px-input').value=direction==='px'?'4, 8, 12, 16, 24, 32, 48, 64':'0.25, 0.5, 0.75, 1, 1.5, 2, 3, 4';run();};
+ $('#px-clear').onclick=()=>{$('#px-input').value='';run();};
+ for(const mode of ['px','rem'])$$(`[data-${mode}-quick]`).forEach(b=>b.onclick=()=>{$(`#px-modes [data-mode=${mode}]`).click();$('#px-input').value=b.getAttribute(`data-${mode}-quick`);run();});
+ $('#px-download').onclick=()=>{if(conversionCSV)download(conversionCSV,`parsecove-${direction==='px'?'px-to-rem':'rem-to-px'}.csv`,'text/csv;charset=utf-8');};
+ run();
 }
 if(page==='base64'){
  let mode='decode';
