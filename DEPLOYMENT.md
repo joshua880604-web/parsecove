@@ -36,6 +36,8 @@
 - `/base64url-decode/`
 - `/base64-to-image/`
 - `/image-to-base64/`
+- `/guides/`
+- `/guides/rem-vs-em/`
 - `/about/`
 - `/privacy/`
 

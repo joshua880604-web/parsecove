@@ -17,6 +17,32 @@ document.addEventListener('click',e=>{if(!e.target.closest('.sidebar,.mobile-men
 if($('#tool-filter'))$('#tool-filter').addEventListener('input',()=>filter($('#tool-filter'),$$('.tools-grid .tool-card'),$('#filter-empty')));
 function download(data,name,type='text/plain;charset=utf-8'){const u=URL.createObjectURL(new Blob([data],{type}));const a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);}
 const page=document.body.dataset.page;
+if(page==='guides/rem-vs-em'){
+ const px=n=>`${Number(n.toFixed(4))}px`;
+ function runUnits(){
+  showError('#unit-error',null);
+  try{
+   const read=(selector,name,min,max)=>{
+    const raw=$(selector).value,value=Number(raw);
+    if(!raw.trim()||!Number.isFinite(value)||value<min||value>max)throw Error(`${name} must be between ${min} and ${max}.`);
+    return value;
+   };
+   const root=read('#unit-root','Root font size',1,64),parent=read('#unit-parent','Parent font size',1,96),ratio=read('#unit-ratio','Child em multiplier',0.1,4),child=parent*ratio;
+   const longest=Math.max(16,root,child);
+   for(const [unit,value] of [['px',16],['rem',root],['em',child]]){
+    text(`#unit-${unit}-length`,px(value));$(`#unit-${unit}-bar`).style.width=`${100*value/longest}%`;
+   }
+   text('#unit-summary',`Child font size: ${px(parent)} × ${ratio} = ${px(child)}.`);
+   text('#unit-font-em',px(parent));text('#unit-font-rem',px(root));text('#unit-padding-em',px(child));text('#unit-padding-rem',px(root));
+   text('#unit-css',`html { font-size: ${root}px; }\n.parent { font-size: ${parent}px; }\n.child { font-size: ${ratio}em; }`);
+   $('#unit-results').hidden=false;
+  }catch(e){$('#unit-results').hidden=true;text('#unit-css','');showError('#unit-error',e);}
+ }
+ ['#unit-root','#unit-parent','#unit-ratio'].forEach(id=>$(id).addEventListener('input',runUnits));
+ $('#unit-reset').onclick=()=>{$('#unit-root').value='16';$('#unit-parent').value='20';$('#unit-ratio').value='1.25';runUnits();};
+ runUnits();
+}
+
 if(page==='unix-timestamp-converter'){
  let clockPaused=false,clockTimer;
  function tickClock(){if(clockPaused||document.hidden)return;const now=Date.now();$('#clock-seconds').value=String(Math.floor(now/1000));$('#clock-ms').value=String(now);text('#clock-iso',new Date(now).toISOString());}

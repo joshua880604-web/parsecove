@@ -1,6 +1,6 @@
 # ParseCove
 
-A browser-local developer toolbox with ten statically generated pages. Try it at [parsecove.com](https://parsecove.com/).
+A browser-local developer toolbox with twelve statically generated pages. Try it at [parsecove.com](https://parsecove.com/).
 
 ## Use the tools
 
@@ -15,6 +15,12 @@ A browser-local developer toolbox with ten statically generated pages. Try it at
 | [Image to Base64 converter](https://parsecove.com/image-to-base64/) | Start with an image file and copy or download a complete data URL, raw Base64, HTML image tag or CSS background declaration. |
 
 The tools are free to use without an account. Conversion inputs are processed in your browser; they are not uploaded to a conversion API. Supported formats, size limits and validation rules are documented on each tool page and below.
+
+## Read the guides
+
+[Developer guides](https://parsecove.com/guides/) connects worked explanations to the conversion tools. The first guide, [REM vs EM](https://parsecove.com/guides/rem-vs-em/), includes a root/parent/child comparison, nested font examples, source references, an in-page glossary and FAQ. The registry, static content and article metadata live in `guide_pages.py`. Guide publication dates are explicit content dates and do not change on every build.
+
+`python3 tests/guides.py` verifies the comparison against actual browser CSS, defaults and invalid inputs, copy, navigation, static content, structured data and responsive layouts.
 
 ## Deploy to Cloudflare Pages
 
