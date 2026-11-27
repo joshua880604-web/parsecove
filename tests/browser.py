@@ -41,7 +41,7 @@ with sync_playwright() as p:
  page.get_by_role('button',name='Base64 to image',exact=True).click();page.locator('#image-input').fill('PHN2Zz48L3N2Zz4=');page.locator('#image-convert').click();expect(page.locator('#image-error')).to_be_visible();expect(page.locator('#image-download')).to_be_hidden()
  for width in [1440,390]:
   page.set_viewport_size({'width':width,'height':900})
-  for route in ['/','/unix-timestamp-converter/','/px-to-rem/','/rem-to-px/','/base64/','/base64url-decode/','/base64-to-image/','/image-to-base64/','/guides/','/guides/rem-vs-em/','/guides/save-base64-image/','/guides/unix-timestamp-seconds-vs-milliseconds/','/guides/fix-invalid-base64/','/privacy/','/about/']:
+  for route in ['/','/unix-timestamp-converter/','/px-to-rem/','/rem-to-px/','/base64/','/base64url-decode/','/base64-to-image/','/image-to-base64/','/hex-to-rgb/','/json-unescape/','/hex-to-text/','/guides/','/guides/rem-vs-em/','/guides/save-base64-image/','/guides/unix-timestamp-seconds-vs-milliseconds/','/guides/fix-invalid-base64/','/privacy/','/about/']:
    r=page.goto(base+route);assert r.status==200
    assert page.locator('h1').count()==1
    assert page.locator('link[rel=canonical]').count()==1

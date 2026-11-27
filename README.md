@@ -1,6 +1,6 @@
 # ParseCove
 
-A browser-local developer toolbox with fifteen statically generated pages. Try it at [parsecove.com](https://parsecove.com/).
+A browser-local developer toolbox with eighteen statically generated pages. Try it at [parsecove.com](https://parsecove.com/).
 
 ## Use the tools
 
@@ -13,6 +13,8 @@ A browser-local developer toolbox with fifteen statically generated pages. Try i
 | [Base64URL decoder and encoder](https://parsecove.com/base64url-decode/) | Decode the URL-safe alphabet as UTF-8 text or hex, encode with optional padding, compare standard Base64 and download original bytes. |
 | [Base64 to image converter](https://parsecove.com/base64-to-image/) | Preview PNG, JPEG, GIF or WebP bytes and download the original image, or encode a local image as Base64. |
 | [Image to Base64 converter](https://parsecove.com/image-to-base64/) | Start with an image file and copy or download a complete data URL, raw Base64, HTML image tag or CSS background declaration. |
+
+The toolbox also includes [HEX to RGB](https://parsecove.com/hex-to-rgb/) with explicit alpha-byte rounding, [JSON unescape / escape](https://parsecove.com/json-unescape/) with separate string formats and one-layer decoding, and [HEX to text](https://parsecove.com/hex-to-text/) with strict UTF-8 and original-byte downloads.
 
 The tools are free to use without an account. Conversion inputs are processed in your browser; they are not uploaded to a conversion API. Supported formats, size limits and validation rules are documented on each tool page and below.
 
@@ -67,6 +69,8 @@ The Base64URL entry point uses the same strict RFC 4648 byte parser as the exist
 
 Tool-specific FAQ additions live in `faq_content.py`. Each answer has a stable fragment identifier and links to a relevant worked guide. The questions stay on the tool page; no separate FAQ or short glossary pages are generated.
 
+The three newer tools use `new_tool_pages.py`, `dist/assets/conversion-core.js` and `dist/assets/new-tools.js`. Their UI module loads only on their own routes. `npm test` covers original and new conversion functions; `python3 tests/new_tools.py` checks browser flows, downloads, clipboard, metadata, local processing and responsive layouts.
+
 ## Publication and SEO
 
 The canonical origin is `https://parsecove.com`, defined in `build.py`. DNS validation and HTTPS issuance must finish before the custom domain serves traffic. The site includes indexable static descriptions, examples, source references and a sitemap. Submit the production-domain sitemap to Search Console after launch. The existing `.openai/hosting.json` records the previous Sites deployment; Cloudflare Pages uses the build settings above and the contents of `dist`. No traffic, ranking, or earnings claims are made.
@@ -100,7 +104,7 @@ Before enabling real AdSense: obtain the account's publisher and unit IDs; revie
 
 ## Conversion references and examples
 
-The seven tool pages keep their stable URLs and include statically rendered task-specific reference sections. PX/REM common values are rendered at a 16px root for no-JavaScript readers, then updated using the selected root and precision. Numeric example buttons select the direction matching their displayed units. The two CSS converter pages share `css_pages.py` and the same conversion function; `/rem-to-px/` starts in REM mode with its own worked examples and reference table. Both pages offer CSV downloads that include the input and output units and root size.
+The ten tool pages keep their stable URLs and include statically rendered task-specific reference sections. PX/REM common values are rendered at a 16px root for no-JavaScript readers, then updated using the selected root and precision. Numeric example buttons select the direction matching their displayed units. The two CSS converter pages share `css_pages.py` and the same conversion function; `/rem-to-px/` starts in REM mode with its own worked examples and reference table. Both pages offer CSV downloads that include the input and output units and root size.
 
 The timestamp page includes a device-clock display refreshed once per second. Pause freezes both units; copying also pauses so copied values stay visible. The display is not a synchronized time service. JavaScript and Python examples use explicit UTC instants.
 

@@ -36,6 +36,9 @@
 - `/base64url-decode/`
 - `/base64-to-image/`
 - `/image-to-base64/`
+- `/hex-to-rgb/`
+- `/json-unescape/`
+- `/hex-to-text/`
 - `/guides/`
 - `/guides/rem-vs-em/`
 - `/guides/save-base64-image/`
