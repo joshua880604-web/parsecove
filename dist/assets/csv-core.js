@@ -16,9 +16,16 @@ function quoteCheck(raw,delimiter){
  }
  if(state==='quoted')throw Error(`Unclosed quoted field in CSV record ${record}.`);
 }
-export function csvToJson(raw,{delimiter='auto',headers=true,infer=false,skipEmpty=false,indent=2}={}){
+export function csvToJson(raw,{delimiter='auto',headers=true,infer=false,skipEmpty=false,indent=2,format='json'}={}){
  raw=inputText(raw);delimiterOption(delimiter);
- if(raw==='')return {data:[],output:jsonOutput([],indent),note:'0 records. Empty input produces an empty array.',delimiter:delimiter==='auto'?',':delimiter};
+ if(!['json','jsonl'].includes(format))throw Error('Choose a JSON array or JSON Lines output.');
+ const serialize=data=>{
+  if(format==='json')return jsonOutput(data,indent);
+  const lines=[];let length=0;
+  for(const row of data){const line=JSON.stringify(row)+'\n';length+=line.length;if(length>LIMITS.output)throw Error('Result exceeds 3,000,000 characters. Use a smaller document.');lines.push(line);}
+  return lines.join('');
+ };
+ if(raw==='')return {data:[],output:serialize([]),format,note:`0 records. Empty input produces ${format==='jsonl'?'an empty JSONL file':'an empty array'}.`,delimiter:delimiter==='auto'?',':delimiter};
  // One final terminator ends the last record; extra empty records remain data.
  raw=raw.replace(/(?:\r\n|\r|\n)$/,'');
  if(raw==='')raw='""';
@@ -28,7 +35,7 @@ export function csvToJson(raw,{delimiter='auto',headers=true,infer=false,skipEmp
  if(errors.length)throw Error(`CSV record ${(errors[0].row??0)+1}: ${errors[0].message}.`);
  let rows=result.data;
  if(skipEmpty)rows=rows.filter(row=>!row.every(cell=>cell===''));
- if(rows.length===0)return {data:[],output:jsonOutput([],indent),note:'0 records after skipping empty rows.',delimiter:chosen};
+ if(rows.length===0)return {data:[],output:serialize([]),format,note:'0 records after skipping empty rows.',delimiter:chosen};
  const width=rows[0].length;
  if(width>LIMITS.columns)throw Error('CSV exceeds 200 columns.');
  for(const [i,row] of rows.entries())if(row.length!==width)throw Error(`CSV record ${i+1} has ${row.length} fields; expected ${width}. Check the delimiter and missing or extra values.`);
@@ -46,7 +53,7 @@ export function csvToJson(raw,{delimiter='auto',headers=true,infer=false,skipEmp
  }
  const data=rows.map(row=>{if(!headers)return row.map(cell);const obj=Object.create(null);keys.forEach((key,i)=>{obj[key]=cell(row[i]);});return obj;});
  const named=chosen==='\t'?'tab':chosen;
- return {data,output:jsonOutput(data,indent),delimiter:chosen,note:`${data.length} records · ${width} columns · delimiter: ${named}. ${infer?'JSON type inference enabled.':'All cell values remain strings.'}${preserved?` ${preserved} unsafe numeric values retained as strings.`:''}${result.errors.some(e=>e.code==='UndetectableDelimiter')?' Auto detection was inconclusive; comma was used.':''}`};
+ return {data,output:serialize(data),format,delimiter:chosen,note:`${data.length} records · ${width} columns · delimiter: ${named}. ${infer?'JSON type inference enabled.':'All cell values remain strings.'}${preserved?` ${preserved} unsafe numeric values retained as strings.`:''}${format==='jsonl'?' JSON Lines: one compact record per line, with a final LF after each record.':''}${result.errors.some(e=>e.code==='UndetectableDelimiter')?' Auto detection was inconclusive; comma was used.':''}`};
 }
 export function jsonToCsv(raw,{delimiter=',',headers=true,nested=false,protect=true,newline='\r\n'}={}){
  delimiter=delimiter==='auto'?',':delimiter;delimiterOption(delimiter);if(!['\n','\r\n'].includes(newline))throw Error('Choose LF or CRLF line endings.');

@@ -16,7 +16,7 @@ with sync_playwright() as p:
  page.on('pageerror',lambda e:errors.append(str(e)));page.on('request',lambda r:requests.append(r.url))
  page.on('request',lambda r:external.append(r.url) if not r.url.startswith((BASE,'blob:','data:')) else None)
  page.on('request',lambda r:mutations.append(r.url) if r.method!='GET' else None)
- page.goto(BASE+'/');expect(page.locator('.tools-grid .tool-card')).to_have_count(13);expect(page.locator('.tool-group-heading:visible')).to_have_count(4)
+ page.goto(BASE+'/');expect(page.locator('.tools-grid .tool-card')).to_have_count(15);expect(page.locator('.tool-group-heading:visible')).to_have_count(4)
  expect(page.locator('.guides-preview .guide-card')).to_have_count(6)
  page.locator('#tool-filter').fill('image');expect(page.locator('.tools-grid .tool-card:visible')).to_have_count(2);expect(page.locator('.tool-group-heading:visible')).to_have_count(1)
  page.locator('#tool-filter').fill('no-such-tool');expect(page.locator('.tool-group-heading:visible')).to_have_count(0);expect(page.locator('#filter-empty')).to_be_visible()
@@ -70,7 +70,7 @@ with sync_playwright() as p:
  assert page.locator('#data-copy').text_content()==expected
  assert page.locator('#nested-json-cells pre code').nth(1).inner_text()==expected.replace('\r\n','\n')
  # One to four relevant recommendations, complete directory elsewhere, no self-recommendations.
- tool_routes=['/'+s+'/' for s in ['unix-timestamp-converter','px-to-rem','rem-to-px','base64','base64url-decode','base64-to-image','image-to-base64','hex-to-rgb','hex-to-rgba','json-unescape','hex-to-text','yaml-to-json','csv-to-json']]
+ tool_routes=['/'+s+'/' for s in ['unix-timestamp-converter','px-to-rem','rem-to-px','base64','base64url-decode','base64-to-image','image-to-base64','hex-to-rgb','hex-to-rgba','json-unescape','hex-to-text','yaml-to-json','csv-to-json','json-minify','json-compare']]
  curated=0
  for route in tool_routes:
   page.goto(BASE+route);links=page.locator('.related .tool-card');assert 3<=links.count()<=4
@@ -116,7 +116,7 @@ for f,p in docs.items():
    if u.fragment:assert unquote(u.fragment) in docs[key].ids,(f,href)
   else:assert (dist/key).is_file(),(f,href)
   links+=1
-urls=[x.text for x in ET.parse(dist/'sitemap.xml').findall('.//{*}loc')];assert len(urls)==len(set(urls))==23 and len(docs)==24
+urls=[x.text for x in ET.parse(dist/'sitemap.xml').findall('.//{*}loc')];assert len(urls)==len(set(urls))==25 and len(docs)==26
 assert all('https://parsecove.com'+r in urls for r in ROUTES)
-report={'new_routes':ROUTES,'RGBA_exact_opacity_and_HEX_rounding':'passed','existing_RGB_semantics':'passed','YAML_live_parser_cases':len(FIXTURES['yaml']),'JSON_one_layer_cases':len(FIXTURES['json']),'published_code_snippets':len(snippets),'published_nested_CSV_example':'passed','exact_copy_and_invalid_clearing':'passed','home_groups_and_search':'passed','curated_recommendation_links':curated,'responsive_checks':responsive,'static_content_and_metadata':'passed','internal_link_checks':links,'sitemap_urls':23,'html_files':24,'page_errors':errors,'external_requests':external,'input_upload_requests':mutations}
+report={'new_routes':ROUTES,'RGBA_exact_opacity_and_HEX_rounding':'passed','existing_RGB_semantics':'passed','YAML_live_parser_cases':len(FIXTURES['yaml']),'JSON_one_layer_cases':len(FIXTURES['json']),'published_code_snippets':len(snippets),'published_nested_CSV_example':'passed','exact_copy_and_invalid_clearing':'passed','home_groups_and_search':'passed','curated_recommendation_links':curated,'responsive_checks':responsive,'static_content_and_metadata':'passed','internal_link_checks':links,'sitemap_urls':len(urls),'html_files':len(docs),'page_errors':errors,'external_requests':external,'input_upload_requests':mutations}
 (OUT/'results.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report,indent=2))

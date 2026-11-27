@@ -24,7 +24,7 @@ with sync_playwright() as p:
  def download():
   with page.expect_download() as d:page.locator('#data-download').click()
   return Path(d.value.path()).read_bytes(),d.value.suggested_filename
- page.goto(BASE+'/');expect(page.locator('.tools-grid .tool-card')).to_have_count(13)
+ page.goto(BASE+'/');expect(page.locator('.tools-grid .tool-card')).to_have_count(15)
  assert not any('/assets/vendor/' in u or '/assets/data-tools.js' in u for u in requests)
  for route in ROUTES:expect(page.locator('.tools-grid a[href="'+route+'"]').first).to_be_visible()
  page.locator('#tool-filter').fill('YAML');expect(page.locator('.tools-grid .tool-card:visible')).to_have_count(1)
@@ -138,7 +138,7 @@ for file,parser in docs.items():
   else:assert (dist/key).is_file(),(file,href,'missing')
   checks+=1
 urls=[el.text for el in ET.parse(dist/'sitemap.xml').findall('.//{*}loc')]
-assert len(urls)==len(set(urls))==23 and len(docs)==24
+assert len(urls)==len(set(urls))==25 and len(docs)==26
 for route in ROUTES:assert 'https://parsecove.com'+route in urls
-report={'new_routes':ROUTES,'YAML_round_trips_and_validation':'passed','CSV_modes_types_headers_quoting':'passed','local_UTF8_files_and_limits':'passed','exact_CRLF_copy_download_and_file_cells':'passed','stale_file_read_cancellation':'passed','safe_text_output':'passed','per_route_local_vendor_loading':'passed','no_JavaScript_metadata_content':'passed','responsive_checks':responsive,'internal_link_checks':checks,'sitemap_urls':23,'html_files':24,'page_errors':errors,'external_requests':external,'input_upload_requests':mutations}
+report={'new_routes':ROUTES,'YAML_round_trips_and_validation':'passed','CSV_modes_types_headers_quoting':'passed','local_UTF8_files_and_limits':'passed','exact_CRLF_copy_download_and_file_cells':'passed','stale_file_read_cancellation':'passed','safe_text_output':'passed','per_route_local_vendor_loading':'passed','no_JavaScript_metadata_content':'passed','responsive_checks':responsive,'internal_link_checks':checks,'sitemap_urls':len(urls),'html_files':len(docs),'page_errors':errors,'external_requests':external,'input_upload_requests':mutations}
 (OUT/'results.json').write_text(json.dumps(report,indent=2)+'\n');print(json.dumps(report,indent=2))

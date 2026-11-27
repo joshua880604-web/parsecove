@@ -4,7 +4,7 @@ import {createHash} from 'node:crypto';
 const vendors=[
  ['yaml',"export {parseDocument,stringify} from 'yaml';",'LICENSE'],
  ['papaparse',"import Papa from 'papaparse'; export const parse=Papa.parse,unparse=Papa.unparse;",'LICENSE'],
- ['jsonc-parser',"export {parseTree,printParseErrorCode} from 'jsonc-parser';",'LICENSE.md'],
+ ['jsonc-parser',"export {parseTree,createScanner,SyntaxKind,printParseErrorCode} from 'jsonc-parser';",'LICENSE.md'],
 ];
 const records=[];
 await mkdir('dist/assets/vendor',{recursive:true});

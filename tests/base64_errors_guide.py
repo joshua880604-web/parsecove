@@ -199,8 +199,8 @@ with sync_playwright() as p:
     sitemap = ET.parse(ROOT / 'dist/sitemap.xml')
     urls = [n.text for n in sitemap.findall('.//{http://www.sitemaps.org/schemas/sitemap/0.9}loc')]
     assert 'https://parsecove.com' + ROUTE in urls
-    assert len(urls) == len(set(urls)) == 23
-    assert len(docs) == 24
+    assert len(urls) == len(set(urls)) == 25
+    assert len(docs) == 26
     assert not errors, errors
     assert not external, external
     assert not mutations, mutations

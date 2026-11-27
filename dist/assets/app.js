@@ -64,6 +64,7 @@ if($('#tool-filter')){
 
 function download(data,name,type='text/plain;charset=utf-8'){const u=URL.createObjectURL(new Blob([data],{type}));const a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);}
 const page=document.body.dataset.page;
+if(['json-minify','json-compare'].includes(page)){const {initJsonWorkflow}=await import('./json-workflows.js');initJsonWorkflow(page,{$,$$,text,showError,modes,download});}
 if(page==='hex-to-rgba'){const {initRgbaTool}=await import('./rgba-tool.js');initRgbaTool({$,text,showError});}
 if(['guides/yaml-vs-json','guides/json-double-encoding'].includes(page)){const {initFormatGuide}=await import('./format-guides.js');await initFormatGuide(page,{$,text,showError});}
 if(['yaml-to-json','csv-to-json'].includes(page)){

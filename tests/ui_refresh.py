@@ -16,8 +16,8 @@ with sync_playwright() as p:
     page.on('pageerror', lambda e: errors.append(str(e)))
     page.goto(BASE)
     expect(page.locator('.nav-group')).to_have_count(4)
-    expect(page.locator('nav[aria-label="Tools"] a')).to_have_count(13)
-    expect(page.locator('.tools-grid .tool-card:visible')).to_have_count(13)
+    expect(page.locator('nav[aria-label="Tools"] a')).to_have_count(15)
+    expect(page.locator('.tools-grid .tool-card:visible')).to_have_count(15)
     page.locator('[data-category="2"]').click()
     expect(page.locator('.tools-grid .tool-card:visible')).to_have_count(4)
     expect(page.locator('#filter-status')).to_have_text('4 tools found')
@@ -26,7 +26,7 @@ with sync_playwright() as p:
     page.locator('[data-category="0"]').click()
     expect(page.locator('#filter-empty')).to_be_visible()
     page.locator('#tool-filter-clear').click()
-    expect(page.locator('.tools-grid .tool-card:visible')).to_have_count(3)
+    expect(page.locator('.tools-grid .tool-card:visible')).to_have_count(5)
     expect(page.locator('#tool-filter')).to_be_focused()
     page.locator('[data-category="all"]').click()
     expect(page.locator('.tool-group-heading:visible')).to_have_count(4)
@@ -65,7 +65,7 @@ with sync_playwright() as p:
     nojs = browser.new_context(java_script_enabled=False, viewport={'width': 1440, 'height': 1000})
     static = nojs.new_page()
     static.goto(BASE)
-    expect(static.locator('.tools-grid a:visible')).to_have_count(13)
+    expect(static.locator('.tools-grid a:visible')).to_have_count(15)
     nojs.close()
 
     samples = [('', 'home'), ('csv-to-json/', 'csv'), ('hex-to-rgba/', 'rgba'),
@@ -90,6 +90,6 @@ with sync_playwright() as p:
     (OUT/'ui-checks.json').write_text(json.dumps({'errors': errors, 'layouts': layouts,
         'discovery': 'category and query combination, clear, no matches',
         'navigation': 'grouped links, modal search, drawer focus trap, Escape, backdrop, resize',
-        'no_javascript': 'all 13 tool cards remain available'}, indent=2))
+        'no_javascript': 'all 15 tool cards remain available'}, indent=2))
     browser.close()
 print('UI checks passed: discovery, keyboard navigation, 30 responsive layouts, no JavaScript links.')
