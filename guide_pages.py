@@ -1,5 +1,6 @@
 """Guide registry, metadata and original worked developer examples."""
 import html
+from data_guides import EXTRA_GUIDES
 
 GUIDES = [{
     'slug': 'guides/rem-vs-em',
@@ -35,13 +36,14 @@ GUIDES = [{
     'label': 'Base64 errors',
 }]
 
+GUIDES += EXTRA_GUIDES
 
 def guide_schema(slug, origin):
     if slug == 'guides':
         return {
             '@context': 'https://schema.org', '@type': 'CollectionPage',
             'name': 'Developer guides | ParseCove', 'url': origin + '/guides/',
-            'description': 'Worked CSS, encoding, image and timestamp examples connected to the ParseCove tools.',
+            'description': 'Worked data format, CSS, encoding, image and timestamp examples connected to the ParseCove tools.',
             'inLanguage': 'en',
             'mainEntity': {'@type': 'ItemList', 'itemListElement': [
                 {'@type': 'ListItem', 'position': i + 1, 'name': g['title'],
@@ -86,7 +88,7 @@ def guides_preview():
 
 
 def guides_index():
-    return '''<div class="page-heading"><span class="eyebrow">UNDERSTAND THE RESULT</span><h1>Developer guides</h1><p>Worked examples, clear assumptions and small experiments you can try. Understand CSS units, Base64 encoding, images and timestamp units, then use the tools to check your own values.</p></div><div class="guide-directory">'''+guide_cards()+'''</div><section class="guide-hub-tools"><h2>Put the examples to work</h2><p>Check CSS lengths, diagnose an encoded value, inspect an image, or convert a timestamp with an explicit unit.</p><div class="actions"><a class="button" href="/px-to-rem/">PX to REM converter</a><a class="button" href="/rem-to-px/">REM to PX converter</a><a class="button" href="/base64/">Base64 encode / decode</a><a class="button" href="/base64-to-image/">Base64 to image</a><a class="button" href="/unix-timestamp-converter/">Unix timestamp converter</a></div></section>'''
+    return '''<div class="page-heading"><span class="eyebrow">UNDERSTAND THE RESULT</span><h1>Developer guides</h1><p>Worked examples, clear assumptions and small experiments you can try. Compare data formats, inspect JSON encoding layers, understand CSS units, and work through encoding, images and timestamp examples. Use the connected tools to check your own values.</p></div><div class="guide-directory">'''+guide_cards()+'''</div><section class="guide-hub-tools"><h2>Put the examples to work</h2><p>Compare YAML and JSON, inspect a string layer, check CSS lengths, diagnose encoded bytes, or convert a timestamp with an explicit unit.</p><div class="actions"><a class="button" href="/yaml-to-json/">YAML ↔ JSON</a><a class="button" href="/json-unescape/">JSON unescape</a><a class="button" href="/csv-to-json/">CSV ↔ JSON</a><a class="button" href="/hex-to-rgba/">HEX to RGBA</a><a class="button" href="/px-to-rem/">PX to REM converter</a><a class="button" href="/rem-to-px/">REM to PX converter</a><a class="button" href="/base64/">Base64 encode / decode</a><a class="button" href="/base64-to-image/">Base64 to image</a><a class="button" href="/unix-timestamp-converter/">Unix timestamp converter</a></div></section>'''
 
 
 def rem_em_guide(code_example, faq, copy):

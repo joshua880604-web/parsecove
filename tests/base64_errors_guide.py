@@ -122,9 +122,9 @@ with sync_playwright() as p:
             expect(page.locator(output_id)).to_have_value(initial_output)
 
     page.goto(BASE + '/')
-    expect(page.locator('.guides-preview .guide-card')).to_have_count(4)
+    expect(page.locator('.guides-preview .guide-card')).to_have_count(6)
     page.goto(BASE + '/guides/')
-    expect(page.locator('.guide-card')).to_have_count(4)
+    expect(page.locator('.guide-card')).to_have_count(6)
     page.locator('.guide-card[href="' + ROUTE + '"]').click()
     expect(page.locator('#base64-error-faq details')).to_have_count(4)
     page.locator('#base64-error-faq summary').first.click()
@@ -199,8 +199,8 @@ with sync_playwright() as p:
     sitemap = ET.parse(ROOT / 'dist/sitemap.xml')
     urls = [n.text for n in sitemap.findall('.//{http://www.sitemaps.org/schemas/sitemap/0.9}loc')]
     assert 'https://parsecove.com' + ROUTE in urls
-    assert len(urls) == len(set(urls)) == 20
-    assert len(docs) == 21
+    assert len(urls) == len(set(urls)) == 23
+    assert len(docs) == 24
     assert not errors, errors
     assert not external, external
     assert not mutations, mutations

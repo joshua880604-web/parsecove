@@ -14,9 +14,11 @@ document.addEventListener('keydown',e=>{if(e.key==='/'&&!['INPUT','TEXTAREA','SE
 $('.sidebar-close').onclick=()=>{$('#sidebar').classList.remove('open');$('.mobile-menu').setAttribute('aria-expanded','false');$('.mobile-menu').focus();};
 $('.mobile-menu').onclick=()=>{const open=$('#sidebar').classList.toggle('open');$('.mobile-menu').setAttribute('aria-expanded',String(open));};
 document.addEventListener('click',e=>{if(!e.target.closest('.sidebar,.mobile-menu')&&$('#sidebar').classList.contains('open')){$('#sidebar').classList.remove('open');$('.mobile-menu').setAttribute('aria-expanded','false');}});
-if($('#tool-filter'))$('#tool-filter').addEventListener('input',()=>filter($('#tool-filter'),$$('.tools-grid .tool-card'),$('#filter-empty')));
+if($('#tool-filter'))$('#tool-filter').addEventListener('input',()=>{filter($('#tool-filter'),$$('.tools-grid .tool-card'),$('#filter-empty'));$$('.tool-group-heading').forEach(h=>h.hidden=!$$(`.tools-grid .tool-card[data-tool-group="${h.dataset.toolGroup}"]`).some(c=>!c.hidden));});
 function download(data,name,type='text/plain;charset=utf-8'){const u=URL.createObjectURL(new Blob([data],{type}));const a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);}
 const page=document.body.dataset.page;
+if(page==='hex-to-rgba'){const {initRgbaTool}=await import('./rgba-tool.js');initRgbaTool({$,text,showError});}
+if(['guides/yaml-vs-json','guides/json-double-encoding'].includes(page)){const {initFormatGuide}=await import('./format-guides.js');await initFormatGuide(page,{$,text,showError});}
 if(['yaml-to-json','csv-to-json'].includes(page)){
  const {initDataTool}=await import('./data-tools.js');
  await initDataTool(page,{$,$$,text,showError,modes,download});

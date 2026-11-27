@@ -1,0 +1,120 @@
+{
+  "yaml": [
+    {
+      "id": "config",
+      "label": "A complete configuration",
+      "input": "# Configuration for a local tool\nservice: ParseCove\nenabled: true\nowner:\n  id: \"001\"\n  name: Ada",
+      "expected": {
+        "service": "ParseCove",
+        "enabled": true,
+        "owner": {
+          "id": "001",
+          "name": "Ada"
+        }
+      },
+      "note": "The comment and presentation are discarded; supported data values remain."
+    },
+    {
+      "id": "booleans",
+      "label": "yes is a string in this schema",
+      "input": "answer: yes\nenabled: true",
+      "expected": {
+        "answer": "yes",
+        "enabled": true
+      },
+      "note": "YAML 1.2 core resolves true as a boolean; yes stays a string. A YAML 1.1 parser may differ."
+    },
+    {
+      "id": "strings",
+      "label": "Identifiers, dates and null",
+      "input": "id: \"001\"\ndate: 2026-11-27\nmissing: null",
+      "expected": {
+        "id": "001",
+        "date": "2026-11-27",
+        "missing": null
+      },
+      "note": "The quoted ID keeps its zeroes. Dates stay strings with the core schema used here."
+    },
+    {
+      "id": "aliases",
+      "label": "An alias becomes repeated values",
+      "input": "primary: &colors [red, blue]\nsecondary: *colors",
+      "expected": {
+        "primary": [
+          "red",
+          "blue"
+        ],
+        "secondary": [
+          "red",
+          "blue"
+        ]
+      },
+      "note": "JSON represents the two arrays as values; it has no anchor syntax or shared-reference identity."
+    },
+    {
+      "id": "duplicate",
+      "label": "Duplicate keys are rejected",
+      "input": "name: Ada\nname: Lin",
+      "error": true,
+      "note": "Two values for the same key are ambiguous. This converter rejects the mapping rather than silently keeping one."
+    },
+    {
+      "id": "keys",
+      "label": "A non-string key needs attention",
+      "input": "1: first",
+      "error": true,
+      "note": "JSON object keys must be strings. Quote the YAML key explicitly when its text is intended."
+    }
+  ],
+  "json": [
+    {
+      "id": "encoded",
+      "label": "A string containing a JSON document",
+      "input": "\"{\\\"id\\\":\\\"001\\\",\\\"ready\\\":true}\"",
+      "expected_kind": "string",
+      "note": "One parse gives JSON text held in a string. Only parse that text again if your data contract expects an object."
+    },
+    {
+      "id": "extra",
+      "label": "One more string layer",
+      "input": "\"\\\"{\\\\\\\"id\\\\\\\":\\\\\\\"001\\\\\\\"}\\\"\"",
+      "expected_kind": "string",
+      "note": "The result is still a complete JSON string literal. Inspect one known layer at a time; do not loop until a value changes type."
+    },
+    {
+      "id": "object",
+      "label": "An object is already an object",
+      "input": "{\"id\":\"001\",\"ready\":true}",
+      "expected_kind": "object",
+      "note": "The first parse already returns an object. JSON.parse is not a general operation to apply repeatedly to any value."
+    },
+    {
+      "id": "path",
+      "label": "Backslashes can be real data",
+      "input": "{\"path\":\"C:\\\\temp\\\\report.txt\",\"message\":\"Line 1\\nLine 2\"}",
+      "expected_kind": "object",
+      "note": "The escaped source represents a path and a newline. Global backslash deletion would change or corrupt those values."
+    },
+    {
+      "id": "identifier",
+      "label": "A numeric-looking string",
+      "input": "\"001\"",
+      "expected_kind": "string",
+      "note": "This string is an identifier, not another document. Preserve its type and leading zeros."
+    },
+    {
+      "id": "field",
+      "label": "One field contains JSON text",
+      "input": "{\"event\":\"saved\",\"payload\":\"{\\\"id\\\":\\\"001\\\"}\"}",
+      "expected_kind": "object",
+      "note": "The document is an object; payload is a string by design. Decode only that known field when its contract says it holds JSON."
+    },
+    {
+      "id": "newline",
+      "label": "A raw newline inside quotes",
+      "input": "\"Line 1\nLine 2\"",
+      "error": true,
+      "note": "An unescaped line feed inside a JSON string is invalid. Encode the newline as a backslash-n sequence in the source."
+    }
+  ]
+}

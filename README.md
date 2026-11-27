@@ -1,6 +1,6 @@
 # ParseCove
 
-A browser-local developer toolbox with twenty statically generated pages. Try it at [parsecove.com](https://parsecove.com/).
+A browser-local developer toolbox with twenty-three statically generated pages. Try it at [parsecove.com](https://parsecove.com/).
 
 ## Use the tools
 
@@ -75,6 +75,12 @@ The two data tools, [YAML ↔ JSON](https://parsecove.com/yaml-to-json/) and [CS
 
 `npm test` includes format round trips, empty values, quoting, type preservation, limits, aliases, duplicate keys and unsafe integers. `python3 tests/data_tools.py` checks both data tools, file decoding, exact clipboard/download bytes, stale-file cancellation, local module loading, static metadata and responsive layouts.
 
+The [HEX to RGBA converter](https://parsecove.com/hex-to-rgba/) accepts HEX and independent opacity. Its primary RGBA result preserves the selected decimal alpha; secondary 8-digit HEX rounds to the nearest alpha byte and reports that difference. Embedded 4-/8-digit HEX alpha takes precedence and disables the separate control. The existing RGB converter retains its byte-aligned behavior.
+
+Two more worked guides, [YAML vs JSON](https://parsecove.com/guides/yaml-vs-json/) and [JSON backslashes and double encoding](https://parsecove.com/guides/json-double-encoding/), use checked fixtures from `guide-fixtures.json`. The YAML demo uses the actual converter; the JSON demo inspects one layer and never recursively coerces strings. `data_guides.py` holds their static text and published code. The CSV page includes a complete nested-cell serialization example and explicitly separates it from automatic column/row expansion, which is outside the tool’s capabilities.
+
+`related_content.py` defines task-specific tool/guide recommendations and four home directory groups. Global navigation and search retain every tool; page recommendations are curated rather than listing every other tool. `python3 tests/content_expansion.py` verifies these workflows, guide examples and code, local-only requests, metadata and responsive layouts.
+
 ## Publication and SEO
 
 The canonical origin is `https://parsecove.com`, defined in `build.py`. DNS validation and HTTPS issuance must finish before the custom domain serves traffic. The site includes indexable static descriptions, examples, source references and a sitemap. Submit the production-domain sitemap to Search Console after launch. The existing `.openai/hosting.json` records the previous Sites deployment; Cloudflare Pages uses the build settings above and the contents of `dist`. No traffic, ranking, or earnings claims are made.
@@ -108,7 +114,7 @@ Before enabling real AdSense: obtain the account's publisher and unit IDs; revie
 
 ## Conversion references and examples
 
-The twelve tool pages keep their stable URLs and include statically rendered task-specific reference sections. PX/REM common values are rendered at a 16px root for no-JavaScript readers, then updated using the selected root and precision. Numeric example buttons select the direction matching their displayed units. The two CSS converter pages share `css_pages.py` and the same conversion function; `/rem-to-px/` starts in REM mode with its own worked examples and reference table. Both pages offer CSV downloads that include the input and output units and root size.
+The thirteen tool pages keep their stable URLs and include statically rendered task-specific reference sections. PX/REM common values are rendered at a 16px root for no-JavaScript readers, then updated using the selected root and precision. Numeric example buttons select the direction matching their displayed units. The two CSS converter pages share `css_pages.py` and the same conversion function; `/rem-to-px/` starts in REM mode with its own worked examples and reference table. Both pages offer CSV downloads that include the input and output units and root size.
 
 The timestamp page includes a device-clock display refreshed once per second. Pause freezes both units; copying also pauses so copied values stay visible. The display is not a synchronized time service. JavaScript and Python examples use explicit UTC instants.
 
