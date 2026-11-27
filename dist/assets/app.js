@@ -43,6 +43,30 @@ if(page==='guides/rem-vs-em'){
  runUnits();
 }
 
+if(page==='guides/unix-timestamp-seconds-vs-milliseconds'){
+ function compareEpochUnits(){
+  showError('#epoch-guide-error',null);
+  for(const unit of ['seconds','milliseconds']){
+   $(`#epoch-guide-${unit}`).value='';showError(`#epoch-guide-${unit}-error`,null);
+   $(`[data-copy="epoch-guide-${unit}"]`).disabled=true;
+  }
+  const raw=$('#epoch-guide-input').value.trim();if(!raw)return;
+  if(raw.length>24||!/^-?\d+$/.test(raw)){
+   showError('#epoch-guide-error',Error('Enter a whole-number timestamp, up to 24 characters.'));return;
+  }
+  for(const unit of ['seconds','milliseconds']){
+   try{$(`#epoch-guide-${unit}`).value=timestamp(raw,unit).iso;$(`[data-copy="epoch-guide-${unit}"]`).disabled=false;}
+   catch(e){showError(`#epoch-guide-${unit}-error`,e);}
+  }
+ }
+ $('#epoch-guide-input').addEventListener('input',compareEpochUnits);
+ $('#epoch-guide-reset').onclick=()=>{$('#epoch-guide-input').value='1700000000';compareEpochUnits();};
+ $('#epoch-guide-clear').onclick=()=>{$('#epoch-guide-input').value='';compareEpochUnits();};
+ const samples=new Map([['seconds','1700000000'],['milliseconds','1700000000000'],['early','999'],['negative','-1']]);
+ $$('[data-epoch-example]').forEach(button=>button.onclick=()=>{$('#epoch-guide-input').value=samples.get(button.dataset.epochExample);compareEpochUnits();});
+ compareEpochUnits();
+}
+
 if(page==='unix-timestamp-converter'){
  let clockPaused=false,clockTimer;
  function tickClock(){if(clockPaused||document.hidden)return;const now=Date.now();$('#clock-seconds').value=String(Math.floor(now/1000));$('#clock-ms').value=String(now);text('#clock-iso',new Date(now).toISOString());}
@@ -74,7 +98,12 @@ if(page==='unix-timestamp-converter'){
  $('#time-now').onclick=()=>{const now=Date.now();if(mode==='batch')$('#batch-input').value=String($('#batch-unit').value==='seconds'?Math.floor(now/1000):now);else if(mode==='date')$('#iso-input').value=new Date(now).toISOString();else $('#timestamp-input').value=String($('#time-unit').value==='milliseconds'?now:Math.floor(now/1000));run();};
  $('#time-sample').onclick=()=>{if(mode==='batch')$('#batch-input').value=$('#batch-unit').value==='seconds'?'1700000000\n1700086400\ninvalid':'1700000000000\n1700086400000\ninvalid';else if(mode==='date')$('#iso-input').value='2023-11-14T22:13:20Z';else $('#timestamp-input').value=$('#time-unit').value==='milliseconds'?'1700000000000':'1700000000';run();};
  $('#time-clear').onclick=()=>{$(mode==='timestamp'?'#timestamp-input':mode==='date'?'#iso-input':'#batch-input').value='';run();};
- $('#batch-download').onclick=()=>{if(batchCSV)download(batchCSV,'parsecove-timestamps.csv','text/csv;charset=utf-8');};run();
+ $('#batch-download').onclick=()=>{if(batchCSV)download(batchCSV,'parsecove-timestamps.csv','text/csv;charset=utf-8');};
+ const preset=new URLSearchParams(location.search).get('example');
+ if(preset==='seconds'||preset==='milliseconds'){
+  $('#time-unit').value=preset;$('#timestamp-input').value=preset==='seconds'?'1700000000':'1700000000000';
+ }
+ run();
 }
 if(page==='px-to-rem'||page==='rem-to-px'){
  let direction=page==='rem-to-px'?'rem':'px',conversionCSV='';

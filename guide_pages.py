@@ -17,6 +17,14 @@ GUIDES = [{
     'published': '2026-11-27',
     'category': 'Images & files',
     'label': 'Save a Base64 image',
+}, {
+    'slug': 'guides/unix-timestamp-seconds-vs-milliseconds',
+    'title': 'Unix Timestamp: Seconds vs Milliseconds — Examples',
+    'heading': 'Unix timestamps: seconds vs milliseconds',
+    'description': 'Compare Unix timestamp seconds and milliseconds, troubleshoot 1970 dates, preserve millisecond precision and run complete JavaScript and Python examples.',
+    'published': '2026-11-27',
+    'category': 'Time & dates',
+    'label': 'Unix timestamp units',
 }]
 
 
@@ -25,7 +33,7 @@ def guide_schema(slug, origin):
         return {
             '@context': 'https://schema.org', '@type': 'CollectionPage',
             'name': 'Developer guides | ParseCove', 'url': origin + '/guides/',
-            'description': 'Worked CSS and image examples connected to the ParseCove tools.',
+            'description': 'Worked CSS, image and timestamp examples connected to the ParseCove tools.',
             'inLanguage': 'en',
             'mainEntity': {'@type': 'ItemList', 'itemListElement': [
                 {'@type': 'ListItem', 'position': i + 1, 'name': g['title'],
@@ -70,7 +78,7 @@ def guides_preview():
 
 
 def guides_index():
-    return '''<div class="page-heading"><span class="eyebrow">UNDERSTAND THE RESULT</span><h1>Developer guides</h1><p>Worked examples, clear assumptions and small experiments you can try. Understand CSS units and encoded images, then use the tools to check your own values.</p></div><div class="guide-directory">'''+guide_cards()+'''</div><section class="guide-hub-tools"><h2>Put the examples to work</h2><p>Check CSS lengths with your root font size, or inspect an encoded image and save its original bytes.</p><div class="actions"><a class="button" href="/px-to-rem/">PX to REM converter</a><a class="button" href="/rem-to-px/">REM to PX converter</a><a class="button" href="/base64-to-image/">Base64 to image</a></div></section>'''
+    return '''<div class="page-heading"><span class="eyebrow">UNDERSTAND THE RESULT</span><h1>Developer guides</h1><p>Worked examples, clear assumptions and small experiments you can try. Understand CSS units, encoded images and timestamp units, then use the tools to check your own values.</p></div><div class="guide-directory">'''+guide_cards()+'''</div><section class="guide-hub-tools"><h2>Put the examples to work</h2><p>Check CSS lengths, inspect an encoded image, or convert a timestamp with an explicit unit.</p><div class="actions"><a class="button" href="/px-to-rem/">PX to REM converter</a><a class="button" href="/rem-to-px/">REM to PX converter</a><a class="button" href="/base64-to-image/">Base64 to image</a><a class="button" href="/unix-timestamp-converter/">Unix timestamp converter</a></div></section>'''
 
 
 def rem_em_guide(code_example, faq, copy):

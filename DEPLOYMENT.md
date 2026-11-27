@@ -39,6 +39,7 @@
 - `/guides/`
 - `/guides/rem-vs-em/`
 - `/guides/save-base64-image/`
+- `/guides/unix-timestamp-seconds-vs-milliseconds/`
 - `/about/`
 - `/privacy/`
 
