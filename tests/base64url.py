@@ -157,7 +157,9 @@ with sync_playwright() as p:
     page.locator('.tools-grid a[href="/base64url-decode/"]').click()
     output('Hello, world!')
     page.goto(BASE + '/base64/')
-    expect(page.locator('main a[href="/base64url-decode/"]')).to_have_count(2)
+    # Contextual help and task recommendations both offer the URL-safe workflow.
+    expect(page.locator('main a[href="/base64url-decode/"]:not(.tool-card)')).to_have_count(2)
+    expect(page.locator('.related a[href="/base64url-decode/"]')).to_have_count(1)
     expect(page.locator('#b64-output')).to_have_value('Hello, world!')
 
     checks = 0

@@ -121,3 +121,9 @@ The timestamp page includes a device-clock display refreshed once per second. Pa
 `dist/assets/examples/` contains original 320×180 PNG, JPEG and WebP fixtures. `image-examples.js` contains the same bytes as Base64 for in-browser examples. Downloads preserve these bytes; no format conversion or compression is performed. Image errors link to an on-page troubleshooting reference.
 
 `python3 tests/content_updates.py` checks live-clock pause/copy, original image download bytes, MIME mismatch handling, PX examples/root changes, metadata and five responsive widths against localhost:3000.
+
+## Shared interface
+
+`build.py` generates the grouped task navigation and searchable home directory. The shared visual layer lives in `dist/assets/ui.css`, loaded after the base component styles; conversion logic and route metadata stay independent. The directory combines a category with a text query, announces result counts, and keeps all tool links in static HTML. Global search supports `/` and Ctrl/Cmd+K. On narrow screens the navigation drawer traps focus, makes the obscured page inert, and restores focus when closed.
+
+With a local static server running, `PARSECOVE_TEST_URL=http://127.0.0.1:3011 python3 tests/ui_refresh.py` checks category/search combinations, empty-state recovery, keyboard search, drawer focus/resize behavior, static links without JavaScript, sticky headers and 30 responsive page layouts. Existing converter and guide browser suites cover the underlying workflows.

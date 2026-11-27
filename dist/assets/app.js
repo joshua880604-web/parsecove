@@ -9,12 +9,59 @@ async function copy(value){if(!value){toast('Nothing to copy yet.');return;}try{
 $$('[data-copy]').forEach(b=>b.addEventListener('click',()=>{if(b.hasAttribute('data-clock-copy'))pauseCurrentClock?.();const el=document.getElementById(b.dataset.copy);copy(el.value??el.textContent);}));
 function modes(id,handler){$$(`${id} button`).forEach(b=>b.addEventListener('click',()=>{if(b.getAttribute('aria-pressed')==='true')return;$$(`${id} button`).forEach(x=>{x.classList.toggle('selected',x===b);x.setAttribute('aria-pressed',String(x===b));});handler(b.dataset.mode);}));}
 function filter(input,list,empty){const q=input.value.trim().toLowerCase();let count=0;list.forEach(a=>{a.hidden=!a.dataset.search.includes(q);if(!a.hidden)count++;});if(empty)empty.hidden=count>0;}
-const dialog=$('#search-dialog');$('.search-trigger').addEventListener('click',()=>{dialog.showModal();$('#global-search').focus();});$('#search-close').onclick=()=>dialog.close();dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close();}});$('#global-search').addEventListener('input',()=>filter($('#global-search'),$$('#search-list a'),$('#search-empty')));
-document.addEventListener('keydown',e=>{if(e.key==='/'&&!['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)&&!e.metaKey&&!e.ctrlKey&&!e.altKey){e.preventDefault();if($('#tool-filter'))$('#tool-filter').focus();else{if(!dialog.open)dialog.showModal();$('#global-search').focus();}}if(e.key==='Escape'){$('#sidebar').classList.remove('open');$('.mobile-menu').setAttribute('aria-expanded','false');}});
-$('.sidebar-close').onclick=()=>{$('#sidebar').classList.remove('open');$('.mobile-menu').setAttribute('aria-expanded','false');$('.mobile-menu').focus();};
-$('.mobile-menu').onclick=()=>{const open=$('#sidebar').classList.toggle('open');$('.mobile-menu').setAttribute('aria-expanded',String(open));};
-document.addEventListener('click',e=>{if(!e.target.closest('.sidebar,.mobile-menu')&&$('#sidebar').classList.contains('open')){$('#sidebar').classList.remove('open');$('.mobile-menu').setAttribute('aria-expanded','false');}});
-if($('#tool-filter'))$('#tool-filter').addEventListener('input',()=>{filter($('#tool-filter'),$$('.tools-grid .tool-card'),$('#filter-empty'));$$('.tool-group-heading').forEach(h=>h.hidden=!$$(`.tools-grid .tool-card[data-tool-group="${h.dataset.toolGroup}"]`).some(c=>!c.hidden));});
+const dialog=$('#search-dialog');
+const sidebar=$('#sidebar'),menu=$('.mobile-menu'),shell=$('.app-shell'),overlay=$('.sidebar-overlay');
+const mobileNav=window.matchMedia('(max-width:800px)');
+function navigation(open,restore=false){
+ const visible=open&&mobileNav.matches;
+ sidebar.classList.toggle('open',visible);menu.setAttribute('aria-expanded',String(visible));
+ document.body.classList.toggle('nav-open',visible);overlay.hidden=!visible;
+ sidebar.inert=mobileNav.matches&&!visible;shell.inert=visible;
+ if(visible)$('.sidebar-close').focus();
+ else if(restore)menu.focus();
+}
+function openSearch(){navigation(false);if(!dialog.open)dialog.showModal();$('#global-search').focus();}
+$('.search-trigger').addEventListener('click',openSearch);
+$('#search-close').onclick=()=>dialog.close();
+// A backdrop click closes the dialog without intercepting clicks inside it.
+dialog.addEventListener('click',e=>{if(e.target===dialog){const r=dialog.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close();}});
+$('#global-search').addEventListener('input',()=>filter($('#global-search'),$$('#search-list a'),$('#search-empty')));
+$('.sidebar-close').onclick=()=>navigation(false,true);
+overlay.onclick=()=>navigation(false,true);
+menu.onclick=()=>navigation(!sidebar.classList.contains('open'));
+mobileNav.addEventListener('change',()=>navigation(false));navigation(false);
+document.addEventListener('keydown',e=>{
+ const typing=['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)||document.activeElement.isContentEditable;
+ if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();openSearch();}
+ else if(e.key==='/'&&!typing&&!e.metaKey&&!e.ctrlKey&&!e.altKey&&!dialog.open&&!sidebar.classList.contains('open')){e.preventDefault();if($('#tool-filter'))$('#tool-filter').focus();else openSearch();}
+ if(e.key==='Escape'&&sidebar.classList.contains('open')){e.preventDefault();navigation(false,true);}
+ if(e.key==='Tab'&&sidebar.classList.contains('open')){
+  const focusable=[...sidebar.querySelectorAll('a[href],button:not([disabled])')].filter(el=>el.getClientRects().length);
+  const first=focusable[0],last=focusable.at(-1);
+  if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+  else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+ }
+});
+if($('#tool-filter')){
+ let category='all';
+ const field=$('#tool-filter'),cards=$$('.tools-grid .tool-card'),clear=$('#tool-filter-clear');
+ function filterTools(){
+  const query=field.value.trim().toLowerCase();let count=0;
+  cards.forEach(card=>{card.hidden=!(category==='all'||card.dataset.toolGroup===category)||!card.dataset.search.includes(query);if(!card.hidden)count++;});
+  $$('.tool-group-heading').forEach(h=>h.hidden=!cards.some(c=>c.dataset.toolGroup===h.dataset.toolGroup&&!c.hidden));
+  $('#filter-empty').hidden=count>0;clear.hidden=!field.value;
+  $('#filter-status').textContent=query||category!=='all'?`${count} ${count===1?'tool':'tools'} found`:`${cards.length} tools, ready when you are`;
+ }
+ field.addEventListener('input',filterTools);
+ clear.addEventListener('click',()=>{field.value='';filterTools();field.focus();});
+ $$('.category-filter').forEach(button=>button.addEventListener('click',()=>{
+  category=button.dataset.category;
+  $$('.category-filter').forEach(other=>{const selected=other===button;other.setAttribute('aria-pressed',String(selected));other.classList.toggle('selected',selected);});
+  filterTools();
+ }));
+ filterTools();
+}
+
 function download(data,name,type='text/plain;charset=utf-8'){const u=URL.createObjectURL(new Blob([data],{type}));const a=document.createElement('a');a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000);}
 const page=document.body.dataset.page;
 if(page==='hex-to-rgba'){const {initRgbaTool}=await import('./rgba-tool.js');initRgbaTool({$,text,showError});}
